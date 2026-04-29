@@ -1,0 +1,30 @@
+Repository allows Java to talk to database without manual SQL ✅
+It's an interface that JPA implements for you ✅
+JPA creates a proxy class at runtime ✅ (This is the key insight!)
+findBy is a naming convention that JPA parses ✅
+
+JPA doesn't look in the table for the method. It looks at the Entity class (your User.java).
+
+```
+Optional<User> findByEmail(String email);
+```
+
+Step-by-step:
+
+JPA sees findBy → "Okay, this is a query method"
+JPA sees Email → "Look for a field called email in the User entity"
+JPA finds private String email; in User.java
+JPA generates SQL: SELECT \* FROM users WHERE email = ?
+
+The pattern:
+
+findBy + FieldName (must match the Java field name in the entity, not the database column name)
+
+Spring sees UserRepository extends JpaRepository
+JPA creates a proxy implementation class at runtime
+Spring registers it as a bean
+Whenever you need it (e.g., in AuthService), Spring injects it
+
+You don't write the implementation, but it exists at runtime!
+
+Interface methods are implicitly public!
