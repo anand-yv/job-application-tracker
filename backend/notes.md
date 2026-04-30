@@ -28,3 +28,6 @@ Whenever you need it (e.g., in AuthService), Spring injects it
 You don't write the implementation, but it exists at runtime!
 
 Interface methods are implicitly public!
+
+`@Component` - tells Spring to create an instance of this class (you'll inject it later)
+`@Value("${jwt.secret}")` - reads from application.yml

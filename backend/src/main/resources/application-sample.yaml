@@ -15,3 +15,7 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect #it tells what syntax to user while generating SQL
+
+jwt:
+  secret: your-256-bit-secret-key-change-this-in-production-make-it-long
+  expiration: 900000 # 15 minutes in milliseconds
