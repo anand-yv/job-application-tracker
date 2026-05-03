@@ -31,3 +31,5 @@ Interface methods are implicitly public!
 
 `@Component` - tells Spring to create an instance of this class (you'll inject it later)
 `@Value("${jwt.secret}")` - reads from application.yml
+
+> In method chains, each method returns an object, and the next method in the chain belongs to that returned object's class.
