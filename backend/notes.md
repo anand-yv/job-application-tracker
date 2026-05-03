@@ -33,3 +33,9 @@ Interface methods are implicitly public!
 `@Value("${jwt.secret}")` - reads from application.yml
 
 > In method chains, each method returns an object, and the next method in the chain belongs to that returned object's class.
+
+CSRF - "Cross Site Request Forgery" - Its  security vulnerabiltity where attacker tricks an user to execute unwanted actions on a web application where they are authenticated
+Some CSRF token is sent while making rquest this help to ensure its proper request but its disable in rest api as its statels and for statelsss we use token jwt one.
+
+
+JWT UTIL : Its used for generating and validating the token
