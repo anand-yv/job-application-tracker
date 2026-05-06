@@ -27,15 +27,55 @@ Whenever you need it (e.g., in AuthService), Spring injects it
 
 You don't write the implementation, but it exists at runtime!
 
+---
+
 Interface methods are implicitly public!
 
 `@Component` - tells Spring to create an instance of this class (you'll inject it later)
 `@Value("${jwt.secret}")` - reads from application.yml
 
+---
+
 > In method chains, each method returns an object, and the next method in the chain belongs to that returned object's class.
+```java
+Jwts.builder()
+    .subject(email)        // returns JwtBuilder
+    .issuedAt(new Date())  // returns JwtBuilder
+    .compact();            // returns String
+```
+
+---
 
 CSRF - "Cross Site Request Forgery" - Its  security vulnerabiltity where attacker tricks an user to execute unwanted actions on a web application where they are authenticated
-Some CSRF token is sent while making rquest this help to ensure its proper request but its disable in rest api as its statels and for statelsss we use token jwt one.
+Some CSRF token is sent while making request this help to ensure its proper request but its disable in rest api as its statels and for statelsss we use token jwt one.
 
+---
 
 JWT UTIL : Its used for generating and validating the token
+
+---
+
+> Final variables cannot be initialized after the constructor because Java guarantees that objects are fully initialized once the constructor completes. This ensures immutability and thread safety, as final fields must have a consistent value visible to all threads.
+
+---
+
+###### Spring Boot Error Handling Notes
+**Two Error Layers**
+
+Security Filter Layer - Runs BEFORE your code. Auth failures (401/403) return status code only, no JSON. Request blocked here never reaches your controllers.
+
+Application Layer - YOUR code (controllers/services). Exceptions thrown here are caught by `@RestControllerAdvice` and return proper JSON responses.
+
+**Why You Saw Just "401"**
+
+Wrong credentials → Security filter rejected request → Returned 401 with empty body → Your code never ran ❌
+
+**Why Your Auth Service WILL Return JSON**
+
+```java
+throw new RuntimeException("Email exists");
+```
+This runs IN your code (application layer) → `@RestControllerAdvice` catches it → Returns `{"error": "Email exists", "status": 400}` ✅
+
+**Key**: Security filter errors ≠ Application errors. Your exceptions happen after security, so they get proper JSON handling.
+---
