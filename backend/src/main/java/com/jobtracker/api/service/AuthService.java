@@ -6,6 +6,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.jobtracker.api.dto.AuthResponse;
+import com.jobtracker.api.exception.EmailAlreadyExistsException;
 import com.jobtracker.api.model.User;
 import com.jobtracker.api.repository.UserRepository;
 import com.jobtracker.api.security.JwtUtil;
@@ -26,7 +27,7 @@ public class AuthService {
         // 1. Check if email already exists
         Optional<User> existingEmail = userRepository.findByEmail(email);
         if (existingEmail.isPresent()) {
-            throw new RuntimeException("Email already exists with that email");         // return ;
+            throw new EmailAlreadyExistsException("Email already exists with that email");         // return ;
         }
 
         // 2. Create new User object

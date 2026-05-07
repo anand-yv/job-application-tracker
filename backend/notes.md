@@ -79,3 +79,15 @@ This runs IN your code (application layer) → `@RestControllerAdvice` catches i
 
 **Key**: Security filter errors ≠ Application errors. Your exceptions happen after security, so they get proper JSON handling.
 ---
+
+`@RestControllerAdvice`: Marks this class as a global exception handler for all controllers.
+
+`@ExceptionHandler(EmailAlreadyExistsException.class)`: Whenever Exception is thrown anywhere in the app, Spring automatically looks for a matching @ExceptionHandler and calls the handler method (in this case, handleEmailAlreadyExists).
+```java
+@ExceptionHandler(EmailAlreadyExistsException.class)
+public ResponseEntity<Map<String, Object>> handleEmailAlreadyExists(EmailAlreadyExistsException ex){
+    return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+}
+```
+
+---
