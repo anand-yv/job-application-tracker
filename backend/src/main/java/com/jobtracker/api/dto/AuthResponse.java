@@ -16,7 +16,7 @@ public class AuthResponse {
         this.updatedAt = updatedAt;
     }
 
-    public String getMail(){
+    public String getEmail(){
         return email;
     };
 

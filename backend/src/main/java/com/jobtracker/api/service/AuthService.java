@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.jobtracker.api.dto.AuthResponse;
 import com.jobtracker.api.exception.EmailAlreadyExistsException;
+import com.jobtracker.api.exception.InvalidCredentialsException;
 import com.jobtracker.api.model.User;
 import com.jobtracker.api.repository.UserRepository;
 import com.jobtracker.api.security.JwtUtil;
@@ -42,6 +43,15 @@ public class AuthService {
         // 5. Generate JWT token
         String token = jwtUtil.generateToken(email);
         // 6. Return AuthResponse
+        return new AuthResponse(email, token, user.getCreatedAt(), user.getUpdatedAt());
+    }
+
+    public AuthResponse login(String email, String password){
+        User user = userRepository.findByEmail(email).orElseThrow(() -> new InvalidCredentialsException("Invalid email or password"));
+        if(!passwordEncoder.matches(password, user.getPasswordHash())){
+            throw new InvalidCredentialsException("Invalid email or password");
+        }
+        String token = jwtUtil.generateToken(email);
         return new AuthResponse(email, token, user.getCreatedAt(), user.getUpdatedAt());
     }
 }
