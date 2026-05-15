@@ -91,3 +91,64 @@ public ResponseEntity<Map<String, Object>> handleEmailAlreadyExists(EmailAlready
 ```
 
 ---
+
+**OncePerRequestFilter**:
+A Spring Security filter that runs only once for every HTTP request before the request reaches the controller.
+It is commonly used for:
+- JWT authentication
+- Validating tokens
+- Identifying the authenticated user
+- Setting authentication details in SecurityContext
+
+```java
+@Component
+public class JwtAuthFilter extends  OncePerRequestFilter{
+    @Override
+    protected void doFilterInternal(HttpServletRequest httpServletRequest,  HttpServletResponse response, FilterChain filterChain){
+       
+    }
+}
+```
+
+`UsernamePasswordAuthenticationToken`:
+- Represents the authenticated user in Spring Security
+- Used to create an Authentication object for Spring Security
+
+`SecurityContextHolder`:
+- Stores security/authentication details for the current request/thread
+- Tells Spring Security which user is currently authenticated
+
+`SecurityContextHolder.getContext().setAuthentication(authToken);`
+- Stores the authenticated user in Spring Security Context
+
+`SecurityContextHolder.getContext().getAuthentication();`
+- Gets the currently authenticated user details
+
+---
+
+###### In Security Config
+
+`addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)`
+- Tells Spring Security to run my JWT filter before Spring's built-in UsernamePasswordAuthenticationFilter
+- Used to replace Spring's default username/password authentication flow with JWT authentication
+- Because of this, users don't need Spring Security's default generated password
+
+`.class` in Java:
+- Used to get the Class/type reference of a class
+- It is NOT an object instance
+
+Example:
+jwtAuthFilter -> Object instance
+JwtAuthFilter.class -> Class/type reference
+
+UsernamePasswordAuthenticationFilter.class
+- Refers to the filter TYPE, so Spring knows where to place my custom filter in filter chain
+- Tt just needs to know which filter in the chain to place yours before. So you pass the type, not an instance.
+
+Used commonly in:
+- addFilterBefore()
+- @ExceptionHandler(RuntimeException.class)
+- Reflection
+- Spring annotations/configuration
+
+---
