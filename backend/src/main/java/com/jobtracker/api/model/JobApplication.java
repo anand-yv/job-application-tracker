@@ -35,16 +35,16 @@ public class JobApplication {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name="role_title", nullable = false)
+    @Column(name = "role_title", nullable = false)
     private String roleTitle;
 
     @Column(nullable = false)
     private String company;
 
-    @Column(name="job_id")
+    @Column(name = "job_id")
     private String jobId;
 
-    @Column(name="job_url")
+    @Column(name = "job_url")
     private String jobUrl;
 
     @Column(nullable = false)
@@ -55,18 +55,22 @@ public class JobApplication {
 
     private String notes;
 
+    @Column(name = "salary_range")
     private String salaryRange;
 
     private String location;
 
+    @Column(name = "applied_date")
     private LocalDate appliedDate;
 
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
     @PrePersist
-    private void beforeCreate(){
+    private void beforeCreate() {
         LocalDateTime currDateTime = LocalDateTime.now();
         this.createdAt = currDateTime;
         this.updatedAt = currDateTime;
