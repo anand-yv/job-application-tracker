@@ -25,12 +25,12 @@ public class JwtAuthFilter extends  OncePerRequestFilter{
     @Override
     protected void doFilterInternal(HttpServletRequest httpServletRequest,  HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException{
         String authHeader  = httpServletRequest.getHeader("Authorization");
-        if(authHeader  == null || !authHeader .startsWith("Bearer ")){
+        if(authHeader  == null || !authHeader.startsWith("Bearer ")){
             // For public endpoints like /auth/login likewise.
             filterChain.doFilter(httpServletRequest, response);
             return;
         }
-        String token = authHeader .substring(7);
+        String token = authHeader.substring(7);
         String email;
 
         try{
