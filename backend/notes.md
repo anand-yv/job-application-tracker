@@ -152,3 +152,23 @@ Used commonly in:
 - Spring annotations/configuration
 
 ---
+
+###### Mapper in JAVA
+- A Mapper is used to convert one object into another. Instead of writing the same conversion logic in multiple places, we keep it in one Mapper. This reduces duplication and makes changes easier to maintain
+
+```java
+public class ApplicationMapper {
+
+    public static JobApplicationResponse toResponse(JobApplication entity) {
+        return new JobApplicationResponse(
+            entity.getId(), entity.getJobId(), entity.getJobUrl(), entity.getCompany(),
+            entity.getRoleTitle(), entity.getStatus(), entity.getSource(), entity.getNotes(),
+            entity.getSalaryRange(), entity.getLocation(), entity.getAppliedDate(),
+            entity.getCreatedAt(), entity.getUpdatedAt()
+        );
+    }
+}
+```
+
+---
+

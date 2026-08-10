@@ -1,5 +1,7 @@
 package com.jobtracker.api.dto;
 
+import java.time.LocalDate;
+
 import com.jobtracker.api.model.ApplicationStatus;
 
 import jakarta.validation.constraints.NotBlank;
@@ -18,5 +20,5 @@ public record JobApplicationRequest(
     String salaryRange,
     String location,
     ApplicationStatus applicationStatus,
-    String appliedDate
+    LocalDate appliedDate
 ) {}
