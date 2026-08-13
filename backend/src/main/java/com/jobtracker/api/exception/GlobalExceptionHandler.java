@@ -30,4 +30,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleWrongPassword(InvalidCredentialsException ex){
         return buildErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
+
+    @ExceptionHandler(DuplicateApplicationException.class)
+    public ResponseEntity<Map<String, Object>> handleDuplicateApplication(DuplicateApplicationException ex){
+        return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
+    }
 }

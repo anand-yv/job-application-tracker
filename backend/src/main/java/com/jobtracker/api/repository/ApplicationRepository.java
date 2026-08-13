@@ -11,4 +11,6 @@ import com.jobtracker.api.model.User;
 public interface ApplicationRepository extends JpaRepository<JobApplication, UUID>{
 
     public List<JobApplication> findByUser(User user);
+
+    public boolean existsByUserAndJobId(User user, String jobId);
 }

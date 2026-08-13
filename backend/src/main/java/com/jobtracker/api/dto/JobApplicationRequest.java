@@ -19,6 +19,6 @@ public record JobApplicationRequest(
     String notes,
     String salaryRange,
     String location,
-    ApplicationStatus applicationStatus,
+    ApplicationStatus status,
     LocalDate appliedDate
 ) {}
