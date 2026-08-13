@@ -31,8 +31,8 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler(DuplicateApplicationException.class)
-    public ResponseEntity<Map<String, Object>> handleDuplicateApplication(DuplicateApplicationException ex){
-        return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT);
+    @ExceptionHandler(ApplicationNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleApplicationNotFound(ApplicationNotFoundException ex){
+        return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

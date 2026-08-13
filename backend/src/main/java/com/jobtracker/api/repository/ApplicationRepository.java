@@ -1,6 +1,7 @@
 package com.jobtracker.api.repository;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -12,5 +13,5 @@ public interface ApplicationRepository extends JpaRepository<JobApplication, UUI
 
     public List<JobApplication> findByUser(User user);
 
-    public boolean existsByUserAndJobId(User user, String jobId);
+    public Optional<JobApplication> findByIdAndUser(UUID id, User user);
 }
