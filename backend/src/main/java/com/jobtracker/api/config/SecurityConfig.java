@@ -6,6 +6,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -14,9 +15,11 @@ import com.jobtracker.api.security.JwtAuthFilter;
 @Configuration
 public class SecurityConfig {
     private final JwtAuthFilter jwtAuthFilter;
+    private final AuthenticationEntryPoint entryPoint;
 
-    SecurityConfig(JwtAuthFilter jwtAuthFilter){
+    SecurityConfig(JwtAuthFilter jwtAuthFilter, AuthenticationEntryPoint entryPoint){
         this.jwtAuthFilter = jwtAuthFilter;
+        this.entryPoint = entryPoint;
     }
 
     @Bean
@@ -29,6 +32,7 @@ public class SecurityConfig {
                 .anyRequest().authenticated()
             ) 
             .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .exceptionHandling(ex -> ex.authenticationEntryPoint(entryPoint))
             // .httpBasic(Customizer.withDefaults())
             ;
         return httpSecurity.build();

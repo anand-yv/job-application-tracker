@@ -3,8 +3,10 @@ package com.jobtracker.api.security;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -18,8 +20,11 @@ public class JwtAuthFilter extends  OncePerRequestFilter{
     // This filter will run only ONE time for every HTTP request before it reaches to controller.
     // Its used to authenticate the request.
     private final JwtUtil jwtUtil;
-    JwtAuthFilter(JwtUtil jwtUtil){
+    private final AuthenticationEntryPoint entryPoint; 
+
+    JwtAuthFilter(JwtUtil jwtUtil, AuthenticationEntryPoint entryPoint){
         this.jwtUtil = jwtUtil;
+        this.entryPoint = entryPoint;
     }
     
     @Override
@@ -37,6 +42,8 @@ public class JwtAuthFilter extends  OncePerRequestFilter{
             email = jwtUtil.extractEmail(token);
         } catch(Exception e){
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            entryPoint.commence(httpServletRequest, response,
+                new InsufficientAuthenticationException("Invalid or expired token"));
             return;
         }
 
