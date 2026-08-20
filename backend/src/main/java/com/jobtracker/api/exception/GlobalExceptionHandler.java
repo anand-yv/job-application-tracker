@@ -18,7 +18,12 @@ public class GlobalExceptionHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    private ResponseEntity<ErrorResponse> buildErrorResponse(String message, HttpStatus status){
+    private ResponseEntity<ErrorResponse> buildErrorResponse(String message, HttpStatus status, Exception ex){
+        if (status.is5xxServerError()) {
+            logger.error("{} - {}: {}", status, ex.getClass().getSimpleName(), message, ex);
+        } else {
+            logger.warn("{} - {}: {}", status, ex.getClass().getSimpleName(), message);
+        }
         ErrorResponse errorResponse = new ErrorResponse(
             LocalDateTime.now(),
             status.value(),
@@ -30,17 +35,17 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(EmailAlreadyExistsException.class)
     public ResponseEntity<ErrorResponse> handleEmailAlreadyExists(EmailAlreadyExistsException ex){
-        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST);
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, ex);
     }
 
     @ExceptionHandler(InvalidCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleWrongPassword(InvalidCredentialsException ex){
-        return buildErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+        return buildErrorResponse(ex.getMessage(), HttpStatus.UNAUTHORIZED, ex);
     }
 
     @ExceptionHandler(ApplicationNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleApplicationNotFound(ApplicationNotFoundException ex){
-        return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND);
+        return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, ex);
     }
 
     // This is done for validation of the DTO
@@ -50,18 +55,18 @@ public class GlobalExceptionHandler {
             .findFirst()
             .map(err -> err.getField() + ": " + err.getDefaultMessage())
             .orElse("Validation failed");
-        return buildErrorResponse(message, HttpStatus.BAD_REQUEST);
+        return buildErrorResponse(message, HttpStatus.BAD_REQUEST, ex);
     }
 
     // This is for if the JSON that is coming is invalid
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handleMalformedJson(HttpMessageNotReadableException ex){
-        return buildErrorResponse("Malformed JSON request", HttpStatus.BAD_REQUEST);
+        return buildErrorResponse("Malformed JSON request", HttpStatus.BAD_REQUEST, ex);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex){
         logger.error("Unhandled exception occured : ", ex);
-        return buildErrorResponse("Something went wrong : " + ex.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return buildErrorResponse("Something went wrong : " + ex.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR, ex);
     }
 }
