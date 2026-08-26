@@ -172,3 +172,44 @@ public class ApplicationMapper {
 
 ---
 
+###### CORS (Cross-Origin Resource Sharing)
+
+**Why needed**
+- Frontend `localhost:5173` + API `localhost:8080` = different origins
+- Browser blocks the response unless API allows that origin via CORS headers
+
+**Preflight (OPTIONS)**
+- For non-simple requests, browser first sends `OPTIONS`
+- Asks: "Can I call this API from this origin with these methods/headers?"
+- If preflight fails → real request never sent → CORS error
+- Flow: `OPTIONS` (permission check) → then real `POST/GET`
+
+**Simple vs non-simple request**
+- Simple → browser sends real request immediately (no OPTIONS)
+  - Methods: `GET`, `HEAD`, or `POST`
+  - Only basic headers; `Content-Type` limited (e.g. `text/plain`, form types) — not `application/json`
+  - No custom headers like `Authorization`
+- Non-simple → anything outside that → browser sends preflight `OPTIONS` first
+  - Our login is non-simple because of `Content-Type: application/json` and/or `Authorization: Bearer ...`
+
+**Why CORS must be on the Security filter chain (`.cors(...)`)**
+- Spring Security runs **before** controllers
+- Preflight `OPTIONS` hits Security first — not your `@RestController`
+- If CORS is only on a controller / only as a bean, Security may still reject/ignore `OPTIONS` before CORS headers are added
+- `.cors(Customizer.withDefaults())` enables CORS inside the filter chain so preflight is handled early, using your `CorsConfigurationSource` rules
+- Without it → common "CORS error" even when you think CORS is configured
+
+**maxAge (`setMaxAge(3600L)`)**
+- Preflight is an extra round trip; doing it on every API call is wasteful
+- `maxAge` = how long (seconds) the browser may **cache** the preflight result
+- `3600` = cache for 1 hour → for that path/method/headers, skip `OPTIONS` and send the real request directly
+- After it expires, browser does preflight again
+- Only caches the CORS permission check — not JWT / login session
+
+**Other CORS settings (quick)**
+- `setAllowCredentials(true)` → allow cookies/auth on cross-origin; cannot use origin `*`
+- `setExposedHeaders(...)` → headers JS is allowed to read from the response
+- `registerCorsConfiguration("/**", config)` → apply these CORS rules to all API paths
+
+---
+
