@@ -1,5 +1,5 @@
 import axios from "axios"
-import { TOKEN_KEY } from "./constant";
+import { TOKEN_KEY } from "../constant";
 
 const instance = axios.create({
     baseURL: import.meta.env.VITE_API_URL,
@@ -18,6 +18,20 @@ instance.interceptors.request.use(
         return config;
     },
     function(error){
+        return Promise.reject(error);
+    }
+)
+
+instance.interceptors.response.use(
+    function(response){
+        return response;
+    },
+    function(error){
+        const hadToken = !!error?.config?.headers?.Authorization;
+        if(error?.response?.status === 401 && hadToken){
+            localStorage.removeItem(TOKEN_KEY);
+            window.location.href = "/login";
+        }
         return Promise.reject(error);
     }
 )

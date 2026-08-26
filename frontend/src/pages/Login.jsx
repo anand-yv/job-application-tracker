@@ -1,14 +1,26 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css"
-import { auth } from "../../services/auth";
+import { auth } from "../services/auth";
+import { TOKEN_KEY } from "../constant";
 
 const Login = () => {
     const [email, setEmail] =useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const handleLogin = async () => {
-        const data = await auth.login({email, password});
-        console.log(data);
+        try{
+            setError(null);
+            const req = await auth.login({email, password});
+            const data = req.data;
+            localStorage.setItem(TOKEN_KEY, data.token)
+            navigate("/dashboard");
+        }catch(e){
+            setError(e.response?.data?.message || "Something went wrong. Please try again.");
+            console.error("Error : ", e.response);
+        }
     }
 
     return (<>
@@ -20,6 +32,7 @@ const Login = () => {
                 <input type="password" value={password} placeholder="***********" onChange={(e) => setPassword(e.target.value)}/>
             </div>
             <button onClick={handleLogin}>LOGIN</button>
+            {error && <p className={styles["error"]}>{error}</p>}
         </div>
     </>);
 }

@@ -1,0 +1,16 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    align-items: center;
+    
+}
+
+.input-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.error{
+    color:crimson;
+}
