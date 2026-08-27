@@ -4,6 +4,8 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import ProtectedRoute from './components/routing/ProtectedRoute'
 import GuestRoute from './components/routing/GuestRoute'
+import Dashboard from './pages/Dashboard'
+import ApplicationDetail from './pages/ApplicationDetail'
 
 
 function App() {
@@ -18,8 +20,8 @@ function App() {
         </Route>
 
         <Route element={<ProtectedRoute/>}>
-          <Route path='/dashboard' element={<h2>DASHBOARD</h2>}/>
-          <Route path='/applications/:id' element={<h2>APPLICATION DETAIL</h2>}/>
+          <Route path='/dashboard' element={<Dashboard/>}/>
+          <Route path='/applications/:id' element={<ApplicationDetail/>}/>
         </Route>
         
       </Routes>
