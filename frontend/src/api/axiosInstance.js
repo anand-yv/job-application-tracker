@@ -9,10 +9,11 @@ const instance = axios.create({
     }
 })
 
+const PUBLIC_ENDPOINTS = ["/auth/login", "/auth/register"];
+
 instance.interceptors.request.use(
     function(config){
-        const publicEndpoints = ["/auth/login", "/auth/register"];
-        const isPublic = publicEndpoints.some(path => config.url?.includes(path));
+        const isPublic = PUBLIC_ENDPOINTS.includes(config.url);
         const token  = localStorage.getItem(TOKEN_KEY);
         if(token && !isPublic){
             config.headers.Authorization = `Bearer ${token}`
