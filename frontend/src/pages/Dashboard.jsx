@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import { applications } from "../services/applications";
 import styles from "./Dashboard.module.css"
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
     const [userApplications, setUserApplications] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null)
+    const navigate = useNavigate();
 
     const fetchApplications = useCallback(async () => {
         try{
@@ -33,6 +34,7 @@ const Dashboard = () => {
             <div className={styles["header"]}>
                 <h4>Applications </h4>
                 <button onClick={fetchApplications}>REFERESH</button>
+                <button onClick={() => {navigate("/applications/new")}}>CREATE APPLICATION</button>
             </div>
             
             {loading ? <p>Loading....</p> : 

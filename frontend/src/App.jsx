@@ -6,6 +6,7 @@ import ProtectedRoute from './components/routing/ProtectedRoute'
 import GuestRoute from './components/routing/GuestRoute'
 import Dashboard from './pages/Dashboard'
 import ApplicationDetail from './pages/ApplicationDetail'
+import ApplicationForm from './pages/ApplicationForm'
 
 
 function App() {
@@ -22,6 +23,7 @@ function App() {
         <Route element={<ProtectedRoute/>}>
           <Route path='/dashboard' element={<Dashboard/>}/>
           <Route path='/applications/:id' element={<ApplicationDetail/>}/>
+          <Route path='/applications/new' element={<ApplicationForm/>}/>
         </Route>
         
       </Routes>

@@ -1,0 +1,23 @@
+.container{
+    padding: 1em;
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.header{
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.field-container{
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.field{
+    display: flex;
+    gap : 1em;
+    justify-content: center;
+}

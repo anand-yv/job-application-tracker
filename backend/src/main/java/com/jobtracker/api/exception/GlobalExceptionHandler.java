@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
         if (status.is5xxServerError()) {
             logger.error("{} - {}: {}", status, ex.getClass().getSimpleName(), message, ex);
         } else {
-            logger.warn("{} - {}: {}", status, ex.getClass().getSimpleName(), message);
+            logger.warn("{} - {}: {}", status, ex.getClass().getSimpleName(), message, ex);
         }
         ErrorResponse errorResponse = new ErrorResponse(
             LocalDateTime.now(),
