@@ -9,11 +9,13 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword]  =useState("");
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleRegister = async () => {
+    const handleRegister = async (e) => {
+        e.preventDefault();
         try{
-
+            setLoading(true);
             setError(null);
             if(password !== confirmPassword){
                 setError("Password and confirm password should be same.");
@@ -26,21 +28,24 @@ const Register = () => {
         }catch(e){
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
             console.error("Error : ", e.response);
+        } finally{
+            setLoading(false);
         }
     }
+
     return (<>
-        <div className={styles["container"]}>
+        <form className={styles["container"]} onSubmit={handleRegister}>
             <div className={styles["input-container"]}>
-                <label>Email : </label>
-                <input type="email" value={email} placeholder="someone@gmail.com" onChange={(e) => setEmail(e.target.value)}/>
-                <label>Password : </label>
-                <input type="password" value={password} placeholder="***********" onChange={(e) => setPassword(e.target.value)}/>
-                 <label>Confirm Password : </label>
-                <input type="password" value={confirmPassword} placeholder="***********" onChange={(e) => setConfirmPassword(e.target.value)}/>                
+                <label htmlFor="email">Email : </label>
+                <input id="email" type="email" value={email} placeholder="someone@gmail.com" onChange={(e) => setEmail(e.target.value)}/>
+                <label htmlFor="password">Password : </label>
+                <input id="password" type="password" value={password} placeholder="***********" onChange={(e) => setPassword(e.target.value)}/>
+                 <label htmlFor="confirm-password" >Confirm Password : </label>
+                <input id="confirm-password" type="password" value={confirmPassword} placeholder="***********" onChange={(e) => setConfirmPassword(e.target.value)}/>                
             </div>
-            <button onClick={handleRegister}>REGISTER</button>
+            <button type="submit" disabled={loading}>{loading ? "CREATING..." : "CREATE"}</button>
             {error && <p className={styles["error"]}>{error}</p>}
-        </div>
+        </form>
     </>);
 }
 

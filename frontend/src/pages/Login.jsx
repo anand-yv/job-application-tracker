@@ -8,32 +8,65 @@ const Login = () => {
     const [email, setEmail] =useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    const handleLogin = async () => {
-        try{
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        try {
+            setLoading(true);
             setError(null);
-            const req = await auth.login({email, password});
+
+            const req = await auth.login({ email, password });
             const data = req.data;
-            localStorage.setItem(TOKEN_KEY, data.token)
+
+            localStorage.setItem(TOKEN_KEY, data.token);
             navigate("/dashboard");
-        }catch(e){
-            setError(e.response?.data?.message || "Something went wrong. Please try again.");
-            console.error("Error : ", e.response);
+        } catch (e) {
+            setError(
+                e.response?.data?.message ||
+                "Something went wrong. Please try again."
+            );
+            console.error("Error:", e);
+        }finally{
+            setLoading(false);
         }
-    }
+    };
 
     return (<>
-        <div className={styles["container"]}>
+        <form
+            className={styles["container"]}
+            onSubmit={handleLogin}
+        >
             <div className={styles["input-container"]}>
-                <label>Email : </label>
-                <input type="email" value={email} placeholder="someone@gmail.com" onChange={(e) => setEmail(e.target.value)}/>
-                <label>Password : </label>
-                <input type="password" value={password} placeholder="***********" onChange={(e) => setPassword(e.target.value)}/>
+                <label htmlFor="email">Email:</label>
+                <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    placeholder="someone@gmail.com"
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                />
+
+                <label htmlFor="password">Password:</label>
+                <input
+                    id="password"
+                    type="password"
+                    value={password}
+                    placeholder="***********"
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                />
             </div>
-            <button onClick={handleLogin}>LOGIN</button>
+
+            <button type="submit" disabled={loading}>
+                {loading ? "LOGGING IN...." : "LOGIN"}
+            </button>
+
             {error && <p className={styles["error"]}>{error}</p>}
-        </div>
+        </form>
     </>);
 }
 

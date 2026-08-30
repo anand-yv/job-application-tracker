@@ -40,12 +40,15 @@ const Dashboard = () => {
             {loading ? <p>Loading....</p> : 
                 error ? <p>{error}</p>:
                 <div className={styles["application-list"]}>
-                    {userApplications.length > 0 ? userApplications.map((userApplication) => (
-                            <Link key={userApplication.id} to={`/applications/${userApplication.id}`}>
-                                <p>Role : {userApplication.roleTitle}</p>
-                                <p>Company : {userApplication.company}</p>
-                                <p>Status : {userApplication.status}</p>
-                            </Link>
+                    {userApplications.length > 0 ? userApplications.map((userApplication, idx) => (
+                            <div className={styles["application-link"]}>
+                                <p className={styles["application-link-index"]} >{idx + 1}</p>
+                                <Link key={userApplication.id} to={`/applications/${userApplication.id}`} className={styles["application-field"]}>
+                                    <p>Role : {userApplication.roleTitle}</p>
+                                    <p>Company : {userApplication.company}</p>
+                                    <p>Status : {userApplication.status}</p>
+                                </Link>
+                            </div>
                         )): 
                     <h4>No Applications. Add Application</h4>}
                  </div>

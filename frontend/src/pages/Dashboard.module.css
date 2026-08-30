@@ -15,3 +15,20 @@
     flex-direction: column;
     gap: 1em;
 }
+
+.application-field{
+    display: flex;
+    gap : 1em;
+    justify-content: center;
+}
+
+.application-link{
+    display: flex;
+    gap : 1em;
+    align-items: center;
+    justify-content: center;
+}
+
+.application-link-index{
+    align-self:self-start;
+}
