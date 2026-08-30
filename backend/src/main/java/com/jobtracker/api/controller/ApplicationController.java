@@ -58,7 +58,7 @@ public class ApplicationController {
 
     @PatchMapping("/{id}/status")
     public ResponseEntity<JobApplicationResponse> updateStatus(@PathVariable UUID id, @Valid @RequestBody UpdateApplicationStatusRequest request){
-        JobApplicationResponse jobApplicationResponse = applicationService.updateStatus(id, request.applicationStatus());
+        JobApplicationResponse jobApplicationResponse = applicationService.updateStatus(id, request.status());
         return new ResponseEntity<JobApplicationResponse>(jobApplicationResponse, HttpStatus.OK);
     }
 

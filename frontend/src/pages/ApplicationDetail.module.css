@@ -13,6 +13,11 @@
     gap: 1em;
 }
 
+.form-actions{
+    display: flex;
+    gap: 1em;
+}
+
 .field{
     display: flex;
     flex-direction: row;

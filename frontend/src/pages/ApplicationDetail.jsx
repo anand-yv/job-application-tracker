@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { applications } from "../services/applications";
 import styles from "./ApplicationDetail.module.css";
 
@@ -7,8 +7,10 @@ const ApplicationDetail = () => {
     const {id} = useParams();
     const [application, setApplication] = useState({});
     const [loading, setLoading] = useState(true);
+    const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
+    const navigate = useNavigate();
 
     const handleChange = (e) => {
         setApplication((prev) => ({...prev, [e.target.name] : e.target.value}));
@@ -60,7 +62,7 @@ const ApplicationDetail = () => {
     const handleUpdateApplication = async (e) => {
         e.preventDefault();
         try{
-            setLoading(true);
+            setActionLoading(true);
             setError(null);
             const res = await applications.update(id, buildPayload(application));
            const data = res.data;
@@ -70,7 +72,43 @@ const ApplicationDetail = () => {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
             console.error('Error : ', e)
         }finally{
-            setLoading(false);
+            setActionLoading(false);
+        }
+    }
+
+    const handleCancel = () => {
+        setIsEditing(false);
+        fetchApplication();
+    }
+
+    const handleDelete = useCallback(async() => {
+        if (!window.confirm("Delete this application? This cannot be undone.")) return;
+        try{
+            setActionLoading(true);
+            setError(null);
+            await applications.deleteById(id);
+            navigate("/dashboard");
+        }catch(e){
+            setError(e.response?.data?.message || "Something went wrong. Please try again.");
+            console.error('Error : ', e)
+        }finally{
+            setActionLoading(false);
+        }
+    }, [id])
+
+    const handleStatusChange = async (e) => {
+        const {name, value} = e.target;
+        const updateData = {[name] : value};
+        try{
+            setActionLoading(true);
+            setError(null);
+            await applications.statusChange(id, updateData);
+            setApplication((prev) => ({...prev, ...updateData}));
+        }catch(e){
+            setError(e.response?.data?.message || "Something went wrong. Please try again.");
+            console.error('Error : ', e)
+        }finally{
+            setActionLoading(false);
         }
     }
 
@@ -83,8 +121,17 @@ const ApplicationDetail = () => {
             <div className={styles["container"]}>
 
                 <form className={styles["field-container"]} onSubmit={handleUpdateApplication}>
-                    {isEditing ? <button key="submit"  type="submit" disabled={loading}>SAVE</button> : 
-                        <button key="edit"  type="button" onClick={()=> setIsEditing(true)}>EDIT</button>}
+                    <div className={styles["form-actions"]}>
+                        {isEditing ?  
+                            <div className={styles["form-actions"]}>
+                                <button key="cancel"  type="button" onClick={handleCancel}>CANCEL</button>
+                                <button key="submit"  type="submit" disabled={actionLoading || !isEditing}>{actionLoading ? "SAVING.." : "SAVE"}</button>
+                            </div> : 
+                            <button key="edit"  type="button" onClick={()=> setIsEditing(true)}>EDIT</button>
+                        }
+                        <button key="delete"  type="button" onClick={handleDelete} disabled={actionLoading}>{actionLoading ? "DELETING..." : "DELETE"}</button>
+                    </div>
+                    
                     <div className={styles["field"]}>
                         <label htmlFor="company">Company :</label>
                         <input
@@ -117,8 +164,8 @@ const ApplicationDetail = () => {
                             id="status"
                             name="status"
                             value={status}
-                            onChange={handleChange}
-                            disabled={!isEditing}
+                            onChange={isEditing ? handleChange : handleStatusChange}
+                            disabled={actionLoading}
                         >
                             <option value="APPLIED">Applied</option>
                             <option value="SCREENING">Screening</option>
