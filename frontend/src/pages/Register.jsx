@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Register.module.css"
 import { auth } from "../services/auth";
 import { TOKEN_KEY } from "../constant";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 const Register = () => {
     const [email, setEmail] =useState("");
@@ -36,14 +39,14 @@ const Register = () => {
     return (<>
         <form className={styles["container"]} onSubmit={handleRegister}>
             <div className={styles["input-container"]}>
-                <label htmlFor="email">Email : </label>
-                <input id="email" type="email" value={email} placeholder="someone@gmail.com" onChange={(e) => setEmail(e.target.value)}/>
-                <label htmlFor="password">Password : </label>
-                <input id="password" type="password" value={password} placeholder="***********" onChange={(e) => setPassword(e.target.value)}/>
-                 <label htmlFor="confirm-password" >Confirm Password : </label>
-                <input id="confirm-password" type="password" value={confirmPassword} placeholder="***********" onChange={(e) => setConfirmPassword(e.target.value)}/>                
+                <Label htmlFor="email">Email : </Label>
+                <Input id="email" type="email" value={email} placeholder="someone@gmail.com" onChange={(e) => setEmail(e.target.value)}/>
+                <Label htmlFor="password">Password : </Label>
+                <Input id="password" type="password" value={password} placeholder="***********" onChange={(e) => setPassword(e.target.value)}/>
+                 <Label htmlFor="confirm-password" >Confirm Password : </Label>
+                <Input id="confirm-password" type="password" value={confirmPassword} placeholder="***********" onChange={(e) => setConfirmPassword(e.target.value)}/>                
             </div>
-            <button type="submit" disabled={loading}>{loading ? "CREATING..." : "CREATE"}</button>
+            <Button type="submit" disabled={loading}>{loading ? "CREATING..." : "CREATE"}</Button>
             {error && <p className={styles["error"]}>{error}</p>}
         </form>
     </>);

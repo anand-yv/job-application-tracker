@@ -6,23 +6,23 @@ const ThemeContext = createContext();
 
 const getInitialTheme = () => {
     const saved = localStorage.getItem(THEME_KEY);
-    if(saved) return saved;
+    if (saved) return saved;
 
-    const systemPrefersDark = window.matchMedia("(prefer-color-scheme: dark)").matches;
+    const systemPrefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
     return systemPrefersDark ? DARK_THEME : LIGHT_THEME;
-}
+};
 
 export const ThemeProvider = ({children}) => {
     const [theme, setTheme] = useState(getInitialTheme);
 
     const toogleTheme = () => {
-        setTheme((prev) => (prev == LIGHT_THEME ? DARK_THEME : LIGHT_THEME));
-    }
+        setTheme((prev) => (prev === LIGHT_THEME ? DARK_THEME : LIGHT_THEME));
+    };
 
     useEffect(() => {
-        document.documentElement.setAttribute("data-theme" , theme);
+        document.documentElement.classList.toggle(DARK_THEME, theme === DARK_THEME);
         localStorage.setItem(THEME_KEY, theme);
-    }, [theme])
+    }, [theme]);
 
     return (
         <ThemeContext.Provider value={{theme, toogleTheme}}>

@@ -2,6 +2,11 @@ import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom"
 import { applications } from "../services/applications";
 import styles from "./ApplicationDetail.module.css";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const ApplicationDetail = () => {
     const {id} = useParams();
@@ -124,17 +129,17 @@ const ApplicationDetail = () => {
                     <div className={styles["form-actions"]}>
                         {isEditing ?  
                             <div className={styles["form-actions"]}>
-                                <button key="cancel"  type="button" onClick={handleCancel}>CANCEL</button>
-                                <button key="submit"  type="submit" disabled={actionLoading || !isEditing}>{actionLoading ? "SAVING.." : "SAVE"}</button>
+                                <Button key="cancel"  type="button" onClick={handleCancel}>CANCEL</Button>
+                                <Button key="submit"  type="submit" disabled={actionLoading || !isEditing}>{actionLoading ? "SAVING.." : "SAVE"}</Button>
                             </div> : 
-                            <button key="edit"  type="button" onClick={()=> setIsEditing(true)}>EDIT</button>
+                            <Button key="edit"  type="button" onClick={()=> setIsEditing(true)}>EDIT</Button>
                         }
-                        <button key="delete"  type="button" onClick={handleDelete} disabled={actionLoading}>{actionLoading ? "DELETING..." : "DELETE"}</button>
+                        <Button key="delete"  type="button" onClick={handleDelete} disabled={actionLoading}>{actionLoading ? "DELETING..." : "DELETE"}</Button>
                     </div>
                     
                     <div className={styles["field"]}>
-                        <label htmlFor="company">Company :</label>
-                        <input
+                        <Label htmlFor="company">Company :</Label>
+                        <Input
                             id="company"
                             name="company"
                             value={company}
@@ -146,8 +151,8 @@ const ApplicationDetail = () => {
                     </div>
 
                     <div className={styles["field"]}>
-                        <label htmlFor="roleTitle">Role Title : </label>
-                        <input
+                        <Label htmlFor="roleTitle">Role Title : </Label>
+                        <Input
                             id="roleTitle"
                             name="roleTitle"
                             value={roleTitle}
@@ -159,26 +164,32 @@ const ApplicationDetail = () => {
                     </div>
 
                     <div className={styles["field"]}>
-                        <label htmlFor="status">Status : </label>
-                        <select
-                            id="status"
-                            name="status"
+                        <Label htmlFor="status">Status : </Label>
+                       <Select
                             value={status}
-                            onChange={isEditing ? handleChange : handleStatusChange}
+                            onValueChange={(value) => {
+                                const fakeEvent = { target: { name: "status", value } };
+                                isEditing ? handleChange(fakeEvent) : handleStatusChange(fakeEvent);
+                            }}
                             disabled={actionLoading}
                         >
-                            <option value="APPLIED">Applied</option>
-                            <option value="SCREENING">Screening</option>
-                            <option value="INTERVIEW">Interview</option>
-                            <option value="OFFER">Offer</option>
-                            <option value="REJECTED">Rejected</option>
-                            <option value="WITHDRAWN">Withdrawn</option>
-                        </select>
+                            <SelectTrigger id="status">
+                                <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="APPLIED">Applied</SelectItem>
+                                <SelectItem value="SCREENING">Screening</SelectItem>
+                                <SelectItem value="INTERVIEW">Interview</SelectItem>
+                                <SelectItem value="OFFER">Offer</SelectItem>
+                                <SelectItem value="REJECTED">Rejected</SelectItem>
+                                <SelectItem value="WITHDRAWN">Withdrawn</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div className={styles["field"]}>
-                        <label htmlFor="jobId">Job ID : </label>
-                        <input
+                        <Label htmlFor="jobId">Job ID : </Label>
+                        <Input
                             id="jobId"
                             name="jobId"
                             value={jobId}
@@ -189,8 +200,8 @@ const ApplicationDetail = () => {
                     </div>
 
                     <div className={styles["field"]}>
-                        <label htmlFor="appliedDate">Applied Date : </label>
-                        <input
+                        <Label htmlFor="appliedDate">Applied Date : </Label>
+                        <Input
                             id="appliedDate"
                             name="appliedDate"
                             value={appliedDate}
@@ -201,8 +212,8 @@ const ApplicationDetail = () => {
                     </div>
 
                     <div className={styles["field"]}>
-                        <label htmlFor="jobUrl">Job URL : </label>
-                        <input
+                        <Label htmlFor="jobUrl">Job URL : </Label>
+                        <Input
                             id="jobUrl"
                             name="jobUrl"
                             value={jobUrl}
@@ -213,8 +224,8 @@ const ApplicationDetail = () => {
                     </div>
 
                     <div className={styles["field"]}>
-                        <label htmlFor="source">Source : </label>
-                        <input
+                        <Label htmlFor="source">Source : </Label>
+                        <Input
                             id="source"
                             name="source"
                             value={source}
@@ -225,8 +236,8 @@ const ApplicationDetail = () => {
                     </div>
 
                     <div className={styles["field"]}>
-                        <label htmlFor="salaryRange">Salary Range : </label>
-                        <input
+                        <Label htmlFor="salaryRange">Salary Range : </Label>
+                        <Input
                             id="salaryRange"
                             name="salaryRange"
                             value={salaryRange}
@@ -237,8 +248,8 @@ const ApplicationDetail = () => {
                     </div>
 
                     <div className={styles["field"]}>
-                        <label htmlFor="location">Location : </label>
-                        <input
+                        <Label htmlFor="location">Location : </Label>
+                        <Input
                             id="location"
                             name="location"
                             value={location}
@@ -249,8 +260,8 @@ const ApplicationDetail = () => {
                     </div>
 
                     <div className={styles["field"]}>
-                        <label htmlFor="notes">Notes : </label>
-                        <textarea
+                        <Label htmlFor="notes">Notes : </Label>
+                        <Textarea
                             id="notes"
                             name="notes"
                             value={notes}

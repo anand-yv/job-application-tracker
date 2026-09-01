@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Login.module.css"
 import { auth } from "../services/auth";
 import { TOKEN_KEY } from "../constant";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 
 const Login = () => {
     const [email, setEmail] =useState("");
@@ -40,8 +43,8 @@ const Login = () => {
             onSubmit={handleLogin}
         >
             <div className={styles["input-container"]}>
-                <label htmlFor="email">Email:</label>
-                <input
+                <Label htmlFor="email">Email:</Label>
+                <Input
                     id="email"
                     type="email"
                     value={email}
@@ -50,8 +53,8 @@ const Login = () => {
                     required
                 />
 
-                <label htmlFor="password">Password:</label>
-                <input
+                <Label htmlFor="password">Password:</Label>
+                <Input
                     id="password"
                     type="password"
                     value={password}
@@ -61,9 +64,10 @@ const Login = () => {
                 />
             </div>
 
-            <button type="submit" disabled={loading}>
+            
+            <Button type="submit" disabled={loading}>
                 {loading ? "LOGGING IN...." : "LOGIN"}
-            </button>
+            </Button>
 
             {error && <p className={styles["error"]}>{error}</p>}
         </form>

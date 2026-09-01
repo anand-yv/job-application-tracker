@@ -4,6 +4,7 @@ import { applications } from "../services/applications";
 import styles from "./Dashboard.module.css"
 import { useTheme } from "../context/ThemeContext";
 import { DARK_THEME, LIGHT_THEME } from "../constant";
+import { Button } from "@/components/ui/button";
 
 const Dashboard = () => {
     const [userApplications, setUserApplications] = useState([]);
@@ -35,10 +36,10 @@ const Dashboard = () => {
     return (<>
         <div className={styles["container"]}>
             <div className={styles["header"]}>
-                <h4>Applications </h4>
-                <button onClick={fetchApplications}>REFERESH</button>
-                <button onClick={() => {navigate("/applications/new")}}>CREATE APPLICATION</button>
-                <button onClick={toogleTheme}>{theme === LIGHT_THEME ? DARK_THEME : LIGHT_THEME}</button>
+                <h5>Applications </h5>
+                <Button onClick={fetchApplications}>REFERESH</Button>
+                <Button onClick={() => {navigate("/applications/new")}}>CREATE APPLICATION</Button>
+                <Button onClick={toogleTheme}>{theme === LIGHT_THEME ? DARK_THEME : LIGHT_THEME}</Button>
             </div>
             
             {loading ? <p>Loading....</p> : 

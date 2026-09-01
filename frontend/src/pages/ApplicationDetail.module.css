@@ -19,7 +19,7 @@
 }
 
 .field{
-    display: flex;
-    flex-direction: row;
+    display: grid;
+    grid-template-columns: 1fr 7fr;
     gap : 1em;
 }
