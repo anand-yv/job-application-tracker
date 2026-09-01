@@ -6,12 +6,14 @@ import GuestRoute from './components/routing/GuestRoute'
 import Dashboard from './pages/Dashboard'
 import ApplicationDetail from './pages/ApplicationDetail'
 import ApplicationForm from './pages/ApplicationForm'
+import Headers from './components/Headers'
 
 
 function App() {
 
   return (
     <>
+      <Headers/>
       <Routes>
 
         <Route element={<GuestRoute/>}>
