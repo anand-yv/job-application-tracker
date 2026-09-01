@@ -11,6 +11,7 @@ import com.jobtracker.api.exception.EmailAlreadyExistsException;
 import com.jobtracker.api.exception.InvalidCredentialsException;
 import com.jobtracker.api.model.User;
 import com.jobtracker.api.repository.UserRepository;
+import com.jobtracker.api.security.CurrentUserProvider;
 import com.jobtracker.api.security.JwtUtil;
 
 @Service
@@ -18,11 +19,13 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final CurrentUserProvider currentUserProvider;
 
-    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil){
+    public AuthService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, CurrentUserProvider currentUserProvider){
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtUtil = jwtUtil;
+        this.currentUserProvider = currentUserProvider;
     }
 
     public AuthResponse registerUser(AuthRequest authRequest){
@@ -54,5 +57,10 @@ public class AuthService {
         }
         String token = jwtUtil.generateToken(authRequest.email());
         return new AuthResponse(authRequest.email(), token, user.getCreatedAt(), user.getUpdatedAt());
+    }
+
+    public AuthResponse getCurrentUser(){
+        User user = currentUserProvider.getCurrentUser();
+        return new AuthResponse(user.getEmail(), null, user.getCreatedAt(), user.getUpdatedAt());
     }
 }
