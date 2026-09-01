@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { DARK_THEME, LIGHT_THEME, THEME_KEY } from "../constant";
 
 
@@ -31,4 +31,5 @@ export const ThemeProvider = ({children}) => {
     )
 
 }
-export default ThemeContext;
+
+export const useTheme = () => useContext(ThemeContext);

@@ -1,13 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { applications } from "../services/applications";
 import styles from "./Dashboard.module.css"
-import { Link, useNavigate } from "react-router-dom";
+import { useTheme } from "../context/ThemeContext";
+import { DARK_THEME, LIGHT_THEME } from "../constant";
 
 const Dashboard = () => {
     const [userApplications, setUserApplications] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);   
     const [error, setError] = useState(null)
     const navigate = useNavigate();
+    const {theme, toogleTheme} = useTheme();
 
     const fetchApplications = useCallback(async () => {
         try{
@@ -35,6 +38,7 @@ const Dashboard = () => {
                 <h4>Applications </h4>
                 <button onClick={fetchApplications}>REFERESH</button>
                 <button onClick={() => {navigate("/applications/new")}}>CREATE APPLICATION</button>
+                <button onClick={toogleTheme}>{theme === LIGHT_THEME ? DARK_THEME : LIGHT_THEME}</button>
             </div>
             
             {loading ? <p>Loading....</p> : 
