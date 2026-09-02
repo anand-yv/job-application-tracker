@@ -6,6 +6,7 @@ import { TOKEN_KEY } from "../constant";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
 
 const Register = () => {
     const [email, setEmail] =useState("");
@@ -13,6 +14,7 @@ const Register = () => {
     const [confirmPassword, setConfirmPassword]  =useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const {fetchUser} = useAuth();
     const navigate = useNavigate();
 
     const handleRegister = async (e) => {
@@ -27,6 +29,7 @@ const Register = () => {
             const req = await auth.register({email, password});
             const data = req.data;
             localStorage.setItem(TOKEN_KEY, data.token);
+            await fetchUser();
             navigate("/dashboard");
         }catch(e){
             setError(e.response?.data?.message || "Something went wrong. Please try again.");

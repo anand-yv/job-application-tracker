@@ -6,12 +6,14 @@ import { TOKEN_KEY } from "../constant";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
-    const [email, setEmail] =useState("");
+    const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const { fetchUser } = useAuth();
     const navigate = useNavigate();
 
     const handleLogin = async (e) => {
@@ -25,6 +27,8 @@ const Login = () => {
             const data = req.data;
 
             localStorage.setItem(TOKEN_KEY, data.token);
+            await fetchUser();
+
             navigate("/dashboard");
         } catch (e) {
             setError(
@@ -32,7 +36,7 @@ const Login = () => {
                 "Something went wrong. Please try again."
             );
             console.error("Error:", e);
-        }finally{
+        } finally {
             setLoading(false);
         }
     };
@@ -64,7 +68,6 @@ const Login = () => {
                 />
             </div>
 
-            
             <Button type="submit" disabled={loading}>
                 {loading ? "LOGGING IN...." : "LOGIN"}
             </Button>

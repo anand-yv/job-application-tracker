@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const ApplicationDetail = () => {
-    const {id} = useParams();
+    const { id } = useParams();
     const [application, setApplication] = useState({});
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -18,7 +18,7 @@ const ApplicationDetail = () => {
     const navigate = useNavigate();
 
     const handleChange = (e) => {
-        setApplication((prev) => ({...prev, [e.target.name] : e.target.value}));
+        setApplication((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
     const {
@@ -37,19 +37,19 @@ const ApplicationDetail = () => {
     } = application
 
     const fetchApplication = useCallback(async () => {
-        try{
-           setLoading(true);
-           setError(null);
-           const res = await applications.getById({id});
-           const data = res.data;
-           setApplication(data);
-        }catch(e){
+        try {
+            setLoading(true);
+            setError(null);
+            const res = await applications.getById({ id });
+            const data = res.data;
+            setApplication(data);
+        } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.")
             console.error('Error : ', e)
-        }finally{
+        } finally {
             setLoading(false);
         }
-    },[id])
+    }, [id])
 
     const buildPayload = (application) => ({
         company: application.company,
@@ -66,17 +66,17 @@ const ApplicationDetail = () => {
 
     const handleUpdateApplication = async (e) => {
         e.preventDefault();
-        try{
+        try {
             setActionLoading(true);
             setError(null);
             const res = await applications.update(id, buildPayload(application));
-           const data = res.data;
-           setApplication(data);
-           setIsEditing(false)
-        }catch(e){
+            const data = res.data;
+            setApplication(data);
+            setIsEditing(false)
+        } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
             console.error('Error : ', e)
-        }finally{
+        } finally {
             setActionLoading(false);
         }
     }
@@ -86,40 +86,40 @@ const ApplicationDetail = () => {
         fetchApplication();
     }
 
-    const handleDelete = useCallback(async() => {
+    const handleDelete = useCallback(async () => {
         if (!window.confirm("Delete this application? This cannot be undone.")) return;
-        try{
+        try {
             setActionLoading(true);
             setError(null);
             await applications.deleteById(id);
             navigate("/dashboard");
-        }catch(e){
+        } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
             console.error('Error : ', e)
-        }finally{
+        } finally {
             setActionLoading(false);
         }
     }, [id])
 
     const handleStatusChange = async (e) => {
-        const {name, value} = e.target;
-        const updateData = {[name] : value};
-        try{
+        const { name, value } = e.target;
+        const updateData = { [name]: value };
+        try {
             setActionLoading(true);
             setError(null);
             await applications.statusChange(id, updateData);
-            setApplication((prev) => ({...prev, ...updateData}));
-        }catch(e){
+            setApplication((prev) => ({ ...prev, ...updateData }));
+        } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
             console.error('Error : ', e)
-        }finally{
+        } finally {
             setActionLoading(false);
         }
     }
 
-    useEffect(()=> {
+    useEffect(() => {
         fetchApplication();
-    },[fetchApplication])
+    }, [fetchApplication])
 
     return <>
         {loading ? <p>Loading.....</p> : error ? <p>{error}</p> :
@@ -127,16 +127,16 @@ const ApplicationDetail = () => {
 
                 <form className={styles["field-container"]} onSubmit={handleUpdateApplication}>
                     <div className={styles["form-actions"]}>
-                        {isEditing ?  
+                        {isEditing ?
                             <div className={styles["form-actions"]}>
-                                <Button key="cancel"  type="button" onClick={handleCancel}>CANCEL</Button>
-                                <Button key="submit"  type="submit" disabled={actionLoading || !isEditing}>{actionLoading ? "SAVING.." : "SAVE"}</Button>
-                            </div> : 
-                            <Button key="edit"  type="button" onClick={()=> setIsEditing(true)}>EDIT</Button>
+                                <Button key="cancel" type="button" onClick={handleCancel}>CANCEL</Button>
+                                <Button key="submit" type="submit" disabled={actionLoading || !isEditing}>{actionLoading ? "SAVING.." : "SAVE"}</Button>
+                            </div> :
+                            <Button key="edit" type="button" onClick={() => setIsEditing(true)}>EDIT</Button>
                         }
-                        <Button key="delete"  type="button" onClick={handleDelete} disabled={actionLoading}>{actionLoading ? "DELETING..." : "DELETE"}</Button>
+                        <Button key="delete" type="button" onClick={handleDelete} disabled={actionLoading}>{actionLoading ? "DELETING..." : "DELETE"}</Button>
                     </div>
-                    
+
                     <div className={styles["field"]}>
                         <Label htmlFor="company">Company :</Label>
                         <Input
@@ -165,7 +165,7 @@ const ApplicationDetail = () => {
 
                     <div className={styles["field"]}>
                         <Label htmlFor="status">Status : </Label>
-                       <Select
+                        <Select
                             value={status}
                             onValueChange={(value) => {
                                 const fakeEvent = { target: { name: "status", value } };

@@ -12,7 +12,7 @@ const getInitialTheme = () => {
     return systemPrefersDark ? DARK_THEME : LIGHT_THEME;
 };
 
-export const ThemeProvider = ({children}) => {
+export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(getInitialTheme);
 
     const toogleTheme = () => {
@@ -25,7 +25,7 @@ export const ThemeProvider = ({children}) => {
     }, [theme]);
 
     return (
-        <ThemeContext.Provider value={{theme, toogleTheme}}>
+        <ThemeContext.Provider value={{ theme, toogleTheme }}>
             {children}
         </ThemeContext.Provider>
     )

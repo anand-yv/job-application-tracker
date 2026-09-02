@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from  "./ApplicationForm.module.css"
+import styles from "./ApplicationForm.module.css"
 import { applications } from "../services/applications";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,23 +10,23 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 const ApplicationForm = () => {
     const [formData, setFormData] = useState({
-        jobId : "",
-        jobUrl : "",
-        company : "",
-        roleTitle : "",
-        status : "APPLIED",
-        source : "",
-        notes : "",
-        salaryRange : "",
-        location : "",
-        appliedDate : "",
+        jobId: "",
+        jobUrl: "",
+        company: "",
+        roleTitle: "",
+        status: "APPLIED",
+        source: "",
+        notes: "",
+        salaryRange: "",
+        location: "",
+        appliedDate: "",
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const naviagte = useNavigate();
 
     const handleChange = (e) => {
-        setFormData((prev) => ({...prev, [e.target.name] : e.target.value}));
+        setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
     const buildPayload = (formData) => ({
@@ -34,7 +34,7 @@ const ApplicationForm = () => {
         company: formData.company,
         roleTitle: formData.roleTitle,
         jobId: formData.jobId || null,
-        status: formData.status || null, 
+        status: formData.status || null,
         jobUrl: formData.jobUrl || null,
         source: formData.source || null,
         notes: formData.notes || null,
@@ -43,17 +43,17 @@ const ApplicationForm = () => {
         appliedDate: formData.appliedDate || null,
     });
 
-    const handleSaveApplication = async(e) => {
+    const handleSaveApplication = async (e) => {
         e.preventDefault();
-        try{
+        try {
             setLoading(true);
             setError(null);
             const req = await applications.create(buildPayload(formData))
             naviagte(`/applications/${req.data?.id}`);
-        }catch(e){
+        } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
             console.error('Error : ', e);
-        }finally{
+        } finally {
             setLoading(false);
         }
     };
@@ -74,13 +74,13 @@ const ApplicationForm = () => {
                 <div className={styles["field"]}>
                     <Label htmlFor="company">Company :</Label>
                     <Input id="company" name="company" value={formData.company} type="text"
-                        onChange={handleChange} required/>
+                        onChange={handleChange} required />
                 </div>
 
                 <div className={styles["field"]}>
                     <Label htmlFor="roleTitle">Role Title : </Label>
                     <Input id="roleTitle" name="roleTitle" value={formData.roleTitle} type="text"
-                        onChange={handleChange} required/>
+                        onChange={handleChange} required />
                 </div>
 
                 <div className={styles["field"]}>
@@ -100,46 +100,46 @@ const ApplicationForm = () => {
                     </Select>
                 </div>
 
-                 <div className={styles["field"]}>
+                <div className={styles["field"]}>
                     <Label htmlFor="jobId">Job ID : </Label>
                     <Input id="jobId" name="jobId" value={formData.jobId} type="text"
-                        onChange={handleChange}/>
+                        onChange={handleChange} />
                 </div>
-                
+
                 <div className={styles["field"]}>
                     <Label htmlFor="appliedDate">Applied Date : </Label>
                     <Input id="appliedDate" name="appliedDate" value={formData.appliedDate} type="date"
-                        onChange={handleChange}/>
+                        onChange={handleChange} />
                 </div>
 
-                 <div className={styles["field"]}>
+                <div className={styles["field"]}>
                     <Label htmlFor="jobUrl">Job URL : </Label>
                     <Input id="jobUrl" name="jobUrl" value={formData.jobUrl} type="text"
-                         onChange={handleChange}/>
+                        onChange={handleChange} />
                 </div>
 
                 <div className={styles["field"]}>
                     <Label htmlFor="source">Source : </Label>
                     <Input id="source" name="source" value={formData.source} type="text"
-                         onChange={handleChange}/>
+                        onChange={handleChange} />
                 </div>
 
                 <div className={styles["field"]}>
                     <Label htmlFor="salaryRange">Salary Range : </Label>
                     <Input id="salaryRange" name="salaryRange" value={formData.salaryRange} type="text"
-                        onChange={handleChange}/>
+                        onChange={handleChange} />
                 </div>
 
                 <div className={styles["field"]}>
                     <Label htmlFor="location">Location : </Label>
                     <Input id="location" name="location" value={formData.location} type="text"
-                        onChange={handleChange}/>
+                        onChange={handleChange} />
                 </div>
 
                 <div className={styles["field"]}>
                     <Label htmlFor="notes">Notes : </Label>
                     <Textarea id="notes" name="notes" value={formData.notes}
-                        onChange={handleChange}/>
+                        onChange={handleChange} />
                 </div>
             </div>
         </form>

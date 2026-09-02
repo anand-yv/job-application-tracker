@@ -1,23 +1,23 @@
-.container{
+.container {
     padding: 1em;
     display: flex;
     flex-direction: column;
     gap: 1em;
 }
 
-.header{
+.header {
     display: flex;
     justify-content: space-evenly;
 }
 
-.field-container{
+.field-container {
     display: flex;
     flex-direction: column;
     gap: 1em;
 }
 
-.field{
+.field {
     display: grid;
     grid-template-columns: 1fr 7fr;
-    gap : 1em;
+    gap: 1em;
 }

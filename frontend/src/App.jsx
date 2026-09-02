@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Navigate, Route, Routes } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ProtectedRoute from './components/routing/ProtectedRoute'
@@ -13,20 +13,22 @@ function App() {
 
   return (
     <>
-      <Headers/>
+      <Headers />
       <Routes>
 
-        <Route element={<GuestRoute/>}>
-          <Route path='/login' element={<Login/>} />
-          <Route path='/register' element={<Register/>}/>
+        <Route path="/" element={<Navigate to="/login" replace />} />
+
+        <Route element={<GuestRoute />}>
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
         </Route>
 
-        <Route element={<ProtectedRoute/>}>
-          <Route path='/dashboard' element={<Dashboard/>}/>
-          <Route path='/applications/:id' element={<ApplicationDetail/>}/>
-          <Route path='/applications/new' element={<ApplicationForm/>}/>
+        <Route element={<ProtectedRoute />}>
+          <Route path='/dashboard' element={<Dashboard />} />
+          <Route path='/applications/:id' element={<ApplicationDetail />} />
+          <Route path='/applications/new' element={<ApplicationForm />} />
         </Route>
-        
+
       </Routes>
     </>
   )

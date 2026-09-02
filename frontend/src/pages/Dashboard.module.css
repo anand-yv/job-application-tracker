@@ -1,34 +1,34 @@
-.container{
+.container {
     display: flex;
     flex-direction: column;
     gap: 2em;
 }
 
-.header{
+.header {
     display: flex;
     flex-direction: row;
     justify-content: space-around;
 }
 
-.application-list{
+.application-list {
     display: flex;
     flex-direction: column;
     gap: 1em;
 }
 
-.application-field{
+.application-field {
     display: flex;
-    gap : 1em;
+    gap: 1em;
     justify-content: center;
 }
 
-.application-link{
+.application-link {
     display: flex;
-    gap : 1em;
+    gap: 1em;
     align-items: center;
     justify-content: center;
 }
 
-.application-link-index{
-    align-self:self-start;
+.application-link-index {
+    align-self: self-start;
 }
