@@ -1,6 +1,5 @@
 package com.jobtracker.api.model;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
@@ -8,17 +7,17 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -26,11 +25,14 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Entity
-@Table(name = "job_applications")
+@Table(
+    name = "contacts",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"user_id", "email"})
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class JobApplication {
+public class Contact {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -40,38 +42,28 @@ public class JobApplication {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @Column(name = "role_title", nullable = false)
-    private String roleTitle;
-
     @Column(nullable = false)
+    private String name;
+
+    private String email;
+
+    private String phone;
+
     private String company;
 
-    @Column(name = "job_id")
-    private String jobId;
-
-    @Column(name = "job_url")
-    private String jobUrl;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private ApplicationStatus status = ApplicationStatus.APPLIED;
-
-    private String source;
+    private String position;
 
     private String notes;
 
-    @Column(name = "salary_range")
-    private String salaryRange;
-
-    private String location;
-
-    @Column(name = "applied_date")
-    private LocalDate appliedDate;
-
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    @ManyToMany(mappedBy = "jobApplications") // Name should be exactly match the field name in Contact 
-    private Set<Contact> contacts = new HashSet<>();
+    @ManyToMany
+    @JoinTable(
+        name = "application_contacts",
+        joinColumns = @JoinColumn(name = "contact_id"),
+        inverseJoinColumns = @JoinColumn(name = "application_id")
+    )
+    private Set<JobApplication> jobApplications = new HashSet<>();
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
@@ -90,5 +82,4 @@ public class JobApplication {
     private void beforeUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
 }
