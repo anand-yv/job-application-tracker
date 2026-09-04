@@ -11,7 +11,7 @@ import com.jobtracker.api.model.User;
 
 public interface ApplicationRepository extends JpaRepository<JobApplication, UUID>{
 
-    public List<JobApplication> findByUser(User user);
+    List<JobApplication> findByUser(User user);
 
-    public Optional<JobApplication> findByIdAndUser(UUID id, User user);
+    Optional<JobApplication> findByIdAndUser(UUID id, User user);
 }
