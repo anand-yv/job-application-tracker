@@ -69,4 +69,9 @@ public class GlobalExceptionHandler {
         logger.error("Unhandled exception occured : ", ex);
         return buildErrorResponse("Something went wrong : " + ex.getClass().getSimpleName(), HttpStatus.INTERNAL_SERVER_ERROR, ex);
     }
+
+    @ExceptionHandler (ContactNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleContactNotFound(ContactNotFoundException ex){
+        return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, ex);
+    }
 }
