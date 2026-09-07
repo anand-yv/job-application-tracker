@@ -74,4 +74,9 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleContactNotFound(ContactNotFoundException ex){
         return buildErrorResponse(ex.getMessage(), HttpStatus.NOT_FOUND, ex);
     }
+
+    @ExceptionHandler(ContactAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleContactAlreadyExists(ContactAlreadyExistsException ex){
+        return buildErrorResponse(ex.getMessage(), HttpStatus.CONFLICT,  ex);
+    }
 }

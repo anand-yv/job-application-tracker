@@ -10,10 +10,14 @@ import org.springframework.stereotype.Repository;
 import com.jobtracker.api.model.Contact;
 import com.jobtracker.api.model.User;
 
-@Repository 
+@Repository
 public interface ContactRepository extends JpaRepository<Contact, UUID> {
 
     List<Contact> findByUser(User user);
 
     Optional<Contact> findByIdAndUser(UUID id, User user);
+
+    Optional<Contact> findByUserAndEmail(User user, String email);
+
+    Optional<Contact> findByUserAndEmailAndIdNot(User user, String email, UUID id);
 }

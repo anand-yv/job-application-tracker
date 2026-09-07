@@ -3,6 +3,7 @@ package com.jobtracker.api.service;
 import java.util.List;
 import java.util.UUID;
 
+import com.jobtracker.api.exception.ContactAlreadyExistsException;
 import com.jobtracker.api.exception.ContactNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -14,36 +15,43 @@ import com.jobtracker.api.model.User;
 import com.jobtracker.api.repository.ContactRepository;
 import com.jobtracker.api.security.CurrentUserProvider;
 
-@Service 
+@Service
 public class ContactServiceImpl implements ContactService {
     private final CurrentUserProvider currentUserProvider;
     private final ContactRepository contactRepository;
     private final ContactMapper contactMapper;
 
-    public ContactServiceImpl(CurrentUserProvider currentUserProvider, ContactRepository contactRepository, ContactMapper contactMapper){
+    public ContactServiceImpl(CurrentUserProvider currentUserProvider, ContactRepository contactRepository,
+            ContactMapper contactMapper) {
         this.currentUserProvider = currentUserProvider;
         this.contactRepository = contactRepository;
         this.contactMapper = contactMapper;
     }
 
-    @Override 
-    public ContactResponse createContact(ContactRequest contactRequest){
+    @Override
+    public ContactResponse createContact(ContactRequest contactRequest) {
         User currentUser = currentUserProvider.getCurrentUser();
+
+        if (contactRequest.email() != null &&
+                contactRepository.findByUserAndEmail(currentUser, contactRequest.email()).isPresent()) {
+            throw new ContactAlreadyExistsException("A contact with this email already exists");
+        }
+
         Contact contact = contactMapper.toEntity(contactRequest, currentUser);
         Contact savedContact = contactRepository.save(contact);
         return contactMapper.toResponse(savedContact);
     }
 
-    @Override 
-    public ContactResponse getContactById(UUID id){
+    @Override
+    public ContactResponse getContactById(UUID id) {
         User currentUser = currentUserProvider.getCurrentUser();
         Contact contact = contactRepository.findByIdAndUser(id, currentUser)
-            .orElseThrow(() -> new ContactNotFoundException("Contact with id " + id + " not found"));
+                .orElseThrow(() -> new ContactNotFoundException("Contact with id " + id + " not found"));
         return contactMapper.toResponse(contact);
     }
 
     @Override
-    public List<ContactResponse> getAllContacts(){
+    public List<ContactResponse> getAllContacts() {
         User currentUser = currentUserProvider.getCurrentUser();
         List<Contact> contacts = contactRepository.findByUser(currentUser);
         return contacts.stream()
@@ -55,7 +63,12 @@ public class ContactServiceImpl implements ContactService {
     public ContactResponse updateContact(UUID id, ContactRequest contactRequest) {
         User currentUser = currentUserProvider.getCurrentUser();
         Contact contact = contactRepository.findByIdAndUser(id, currentUser)
-            .orElseThrow(() -> new ContactNotFoundException("Contact with id " + id + " not found"));
+                .orElseThrow(() -> new ContactNotFoundException("Contact with id " + id + " not found"));
+
+        if (contactRequest.email() != null &&
+                contactRepository.findByUserAndEmailAndIdNot(currentUser, contactRequest.email(), id).isPresent()) {
+            throw new ContactAlreadyExistsException("A contact with this email already exists");
+        }
 
         contact.setName(contactRequest.name());
         contact.setEmail(contactRequest.email());
@@ -68,11 +81,11 @@ public class ContactServiceImpl implements ContactService {
         return contactMapper.toResponse(updatedContact);
     }
 
-    @Override 
-    public void deleteContact(UUID id){
+    @Override
+    public void deleteContactById(UUID id) {
         User currentUser = currentUserProvider.getCurrentUser();
         Contact contact = contactRepository.findByIdAndUser(id, currentUser)
-           .orElseThrow(() -> new ContactNotFoundException("Contact with id " + id + " not found"));
+                .orElseThrow(() -> new ContactNotFoundException("Contact with id " + id + " not found"));
         contactRepository.delete(contact);
     }
 

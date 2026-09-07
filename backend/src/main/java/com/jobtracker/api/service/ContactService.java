@@ -16,5 +16,5 @@ public interface ContactService {
 
     ContactResponse updateContact(UUID id, ContactRequest contactRequest);
 
-    void deleteContact(UUID id);
+    void deleteContactById(UUID id);
 }
