@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.jobtracker.api.dto.ContactLinkRequest;
 import com.jobtracker.api.dto.JobApplicationRequest;
 import com.jobtracker.api.dto.JobApplicationResponse;
 import com.jobtracker.api.dto.UpdateApplicationStatusRequest;
@@ -66,6 +67,12 @@ public class ApplicationController {
     public ResponseEntity<Void> deleteApplication(@PathVariable UUID id){
         applicationService.deleteApplication(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping ("/{id}/contacts")
+    public ResponseEntity<JobApplicationResponse> linkContacts(@PathVariable UUID id, @RequestBody ContactLinkRequest contactLinkRequest){
+        JobApplicationResponse jobApplicationResponse =  applicationService.linkContacts(id, contactLinkRequest);
+        return ResponseEntity.ok().body(jobApplicationResponse);
     }
 
 }

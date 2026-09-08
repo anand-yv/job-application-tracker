@@ -7,6 +7,13 @@ import com.jobtracker.api.model.JobApplication;
 
 @Component
 public class ApplicationMapper {
+
+    private final ContactMapper contactMapper;
+
+    public  ApplicationMapper(ContactMapper contactMapper){
+        this.contactMapper = contactMapper;
+    }
+
     public JobApplicationResponse toResponse(JobApplication entity){
         return new JobApplicationResponse(
             entity.getId(),
@@ -20,6 +27,9 @@ public class ApplicationMapper {
             entity.getSalaryRange(),
             entity.getLocation(),
             entity.getAppliedDate(),
+            entity.getContacts().stream()
+                .map(contactMapper::toResponse)
+                .toList(),
             entity.getCreatedAt(),
             entity.getUpdatedAt()
         );

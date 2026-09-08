@@ -2,6 +2,7 @@ package com.jobtracker.api.dto;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import com.jobtracker.api.model.ApplicationStatus;
@@ -18,6 +19,7 @@ public record JobApplicationResponse (
     String salaryRange,
     String location, 
     LocalDate appliedDate,
+    List<ContactResponse> contacts,
     LocalDateTime createdAt,
     LocalDateTime updatedAt
 ){}

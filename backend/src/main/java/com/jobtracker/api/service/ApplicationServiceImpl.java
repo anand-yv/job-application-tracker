@@ -1,18 +1,23 @@
 package com.jobtracker.api.service;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import com.jobtracker.api.dto.ContactLinkRequest;
 import com.jobtracker.api.dto.JobApplicationRequest;
 import com.jobtracker.api.dto.JobApplicationResponse;
 import com.jobtracker.api.exception.ApplicationNotFoundException;
+import com.jobtracker.api.exception.ContactNotFoundException;
 import com.jobtracker.api.mapper.ApplicationMapper;
 import com.jobtracker.api.model.ApplicationStatus;
+import com.jobtracker.api.model.Contact;
 import com.jobtracker.api.model.JobApplication;
 import com.jobtracker.api.model.User;
 import com.jobtracker.api.repository.ApplicationRepository;
+import com.jobtracker.api.repository.ContactRepository;
 import com.jobtracker.api.security.CurrentUserProvider;
 
 @Service
@@ -20,12 +25,14 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final CurrentUserProvider currentUserProvider;
     private final ApplicationRepository applicationRepository;
     private final ApplicationMapper applicationMapper;
+    private final ContactRepository contactRepository;
 
     public ApplicationServiceImpl(CurrentUserProvider currentUserProvider, ApplicationRepository applicationRepository,
-            ApplicationMapper applicationMapper) {
+            ApplicationMapper applicationMapper, ContactRepository contactRepository) {
         this.currentUserProvider = currentUserProvider;
         this.applicationRepository = applicationRepository;
         this.applicationMapper = applicationMapper;
+        this.contactRepository = contactRepository;
     }
 
     @Override
@@ -52,17 +59,17 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public JobApplicationResponse getApplicationById(UUID id){
+    public JobApplicationResponse getApplicationById(UUID id) {
         User currentUser = currentUserProvider.getCurrentUser();
 
         JobApplication jobApplication = applicationRepository.findByIdAndUser(id, currentUser)
-            .orElseThrow(() -> new ApplicationNotFoundException("Job application with id " + id + " not found"));
+                .orElseThrow(() -> new ApplicationNotFoundException("Job application with id " + id + " not found"));
 
         return applicationMapper.toResponse(jobApplication);
     }
 
     @Override
-    public List<JobApplicationResponse> getAllApplicationsForCurrentUser(){
+    public List<JobApplicationResponse> getAllApplicationsForCurrentUser() {
         User currentUser = currentUserProvider.getCurrentUser();
         List<JobApplication> jobApplications = applicationRepository.findByUser(currentUser);
         return jobApplications.stream()
@@ -113,30 +120,52 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public JobApplicationResponse updateStatus(UUID id, ApplicationStatus applicationStatus){
+    public JobApplicationResponse updateStatus(UUID id, ApplicationStatus applicationStatus) {
         User currentUser = currentUserProvider.getCurrentUser();
 
         JobApplication jobApplication = applicationRepository.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new ApplicationNotFoundException("Job application with id " + id + " not found"));
-        
+
         if (applicationStatus == null) {
             throw new IllegalArgumentException("Status cannot be null");
-        }        
+        }
 
         jobApplication.setStatus(applicationStatus);
         JobApplication savedJobApplication = applicationRepository.save(jobApplication);
-        
+
         return applicationMapper.toResponse(savedJobApplication);
     }
 
     @Override
-    public void deleteApplication(UUID id){
+    public void deleteApplication(UUID id) {
         User currentUser = currentUserProvider.getCurrentUser();
 
         JobApplication jobApplication = applicationRepository.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new ApplicationNotFoundException("Job application with id " + id + " not found"));
-       
+
         applicationRepository.delete(jobApplication);
+    }
+
+    @Override
+    public JobApplicationResponse linkContacts(UUID id, ContactLinkRequest request) {
+        User currentUser = currentUserProvider.getCurrentUser();
+
+        JobApplication jobApplication = applicationRepository.findByIdAndUser(id, currentUser)
+                .orElseThrow(() -> new ApplicationNotFoundException("Job application with id " + id + " not found"));
+
+        List<UUID> contactIds = request.contactIds() == null ? List.of() : request.contactIds();
+
+        if (contactIds != null && !contactIds.isEmpty()) {
+            List<Contact> contacts = contactRepository.findByIdInAndUser(contactIds, currentUser);
+    
+            if (contacts.size() != contactIds.size()) {
+                throw new ContactNotFoundException("One or more contacts not found");
+            }
+            jobApplication.setContacts(new HashSet<>(contacts));
+        }
+
+        JobApplication savedJobApplication = applicationRepository.save(jobApplication);
+        return applicationMapper.toResponse(savedJobApplication);
     }
 
 }
