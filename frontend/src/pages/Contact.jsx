@@ -2,12 +2,13 @@ import { contactService } from "@/services/contactService";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./Contact.module.css"
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Contact = () => {
     const [contactList, setContactList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     const fetchContacts = useCallback(async () => {
         try {
@@ -33,7 +34,7 @@ const Contact = () => {
             <div className={styles["header"]}>
                 <h5>Contacts </h5>
                 <Button onClick={fetchContacts}>REFERESH</Button>
-                {/* <Button onClick={() => { navigate("/contacts/new") }}>CREATE CONTACT</Button> */}
+                <Button onClick={() => { navigate("/contacts/new") }}>CREATE CONTACT</Button>
             </div>
 
             {loading ? <p>Loading....</p> :

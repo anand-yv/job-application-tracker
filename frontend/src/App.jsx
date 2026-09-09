@@ -10,6 +10,7 @@ import Headers from './components/Headers'
 import Contact from './pages/Contact'
 import NotFound from './pages/NotFound'
 import ContactDetails from './pages/ContactDetail'
+import ContactForm from './pages/ContactForm'
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
           <Route path='/applications/new' element={<ApplicationForm />} />
           <Route path='/contacts' element={<Contact />} />
           <Route path='/contacts/:id' element={<ContactDetails />} />
+          <Route path='/contacts/new' element={<ContactForm />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

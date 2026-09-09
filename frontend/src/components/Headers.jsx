@@ -27,6 +27,10 @@ const Headers = () => {
             <div onClick={() => navigate("/dashboard")} className={styles.logo}>
                 JSJSJ
             </div>
+            <Button variant="ghost" onClick={() => {navigate("/contacts")}}>
+                CONTACTS
+            </Button>
+
 
             <div className={styles["actions"]}>
                 <Button variant="ghost" onClick={toogleTheme}>
