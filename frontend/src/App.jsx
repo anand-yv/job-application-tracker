@@ -7,6 +7,9 @@ import Dashboard from './pages/Dashboard'
 import ApplicationDetail from './pages/ApplicationDetail'
 import ApplicationForm from './pages/ApplicationForm'
 import Headers from './components/Headers'
+import Contact from './pages/Contact'
+import NotFound from './pages/NotFound'
+import ContactDetails from './pages/ContactDetail'
 
 
 function App() {
@@ -27,7 +30,11 @@ function App() {
           <Route path='/dashboard' element={<Dashboard />} />
           <Route path='/applications/:id' element={<ApplicationDetail />} />
           <Route path='/applications/new' element={<ApplicationForm />} />
+          <Route path='/contacts' element={<Contact />} />
+          <Route path='/contacts/:id' element={<ContactDetails />} />
         </Route>
+
+        <Route path="*" element={<NotFound />} />
 
       </Routes>
     </>

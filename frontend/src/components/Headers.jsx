@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useState } from "react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { LIGHT_THEME } from "@/constant";
 
 const Headers = () => {
     const { user, authLoading, logout } = useAuth();
@@ -29,7 +30,7 @@ const Headers = () => {
 
             <div className={styles["actions"]}>
                 <Button variant="ghost" onClick={toogleTheme}>
-                    {theme === "light" ? "🌙" : "☀️"}
+                    {theme === LIGHT_THEME ? "🌙" : "☀️"}
                 </Button>
 
                 {authLoading ? null : user ? (
