@@ -102,7 +102,7 @@ const ApplicationDetail = () => {
         } finally {
             setActionLoading(false);
         }
-    }, [id])
+    }, [id, navigate])
 
     const handleStatusChange = async (e) => {
         const { name, value } = e.target;

@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ContactMultiSelect from "./ContactMultiSelect";
 
 const ApplicationForm = () => {
     const [formData, setFormData] = useState({
@@ -118,6 +119,31 @@ const ApplicationForm = () => {
                         onChange={handleChange} />
                 </div>
 
+                <ContactMultiSelect
+                    allContacts={[
+                        {
+                            id: "1",
+                            name: "Rahul Sharma",
+                            company: "Google",
+                        },
+                        {
+                            id: "2",
+                            name: "Priya Singh",
+                            company: "Microsoft",
+                        },
+                        {
+                            id: "3",
+                            name: "Amit Kumar",
+                            company: "Amazon",
+                        },
+                        {
+                            id: "4",
+                            name: "Neha Verma",
+                            company: "Adobe",
+                        },
+                    ]}
+                    slectedIds={["1", "3"]}
+                />
                 <div className={styles["field"]}>
                     <Label htmlFor="source">Source : </Label>
                     <Input id="source" name="source" value={formData.source} type="text"

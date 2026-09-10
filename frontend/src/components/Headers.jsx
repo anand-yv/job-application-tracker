@@ -44,7 +44,7 @@ const Headers = () => {
                                 <button className={styles.avatar}>{getInitials(user.email)}</button>
                             } />
                             <DropdownMenuContent>
-                                <DropdownMenuItem onClick={() => setDialogOpen(true)}>
+                                <DropdownMenuItem variant="destructive" onClick={() => setDialogOpen(true)}>
                                     Logout
                                 </DropdownMenuItem>
                                 {/* TODO :  Need to add more iterms like profile page and so on. */}

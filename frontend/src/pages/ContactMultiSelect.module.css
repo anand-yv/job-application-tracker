@@ -1,0 +1,51 @@
+.multi-select{
+    position: relative;
+    width: fit-content;
+}
+
+.popover{
+    position: absolute;
+    top: calc(100% + 0.5em);
+    left: 0;
+
+    width: 100%;
+    padding: 0.25em;
+
+    background: var(--popover);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+}
+
+.option{
+    display: grid;
+    grid-template-columns: 1.25em 1fr ;
+    align-items: flex-start;
+    gap: 1em;
+    cursor: pointer;
+
+    padding: 0.25em;
+}
+
+.option:hover{
+    background: var(--accent);
+}
+
+.check-icon{
+    align-self: center;
+}
+
+.divider{
+    border-left: 1px solid var(--border);
+    height: 20px;
+}
+
+.option-content{
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+    align-items: center;
+}
