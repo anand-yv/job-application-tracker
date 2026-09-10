@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const ApplicationDetail = () => {
     const { id } = useParams();
     const [application, setApplication] = useState({});
+    const [restoreApplication, setRestoreApplication] = useState({});
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -20,7 +21,7 @@ const ApplicationDetail = () => {
     const handleChange = (e) => {
         setApplication((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
-
+    
     const {
         jobId,
         jobUrl,
@@ -43,6 +44,7 @@ const ApplicationDetail = () => {
             const res = await applications.getById({ id });
             const data = res.data;
             setApplication(data);
+            setRestoreApplication({...data});
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.")
             console.error('Error : ', e)
@@ -72,6 +74,7 @@ const ApplicationDetail = () => {
             const res = await applications.update(id, buildPayload(application));
             const data = res.data;
             setApplication(data);
+            setRestoreApplication({...data});
             setIsEditing(false)
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
@@ -83,7 +86,7 @@ const ApplicationDetail = () => {
 
     const handleCancel = () => {
         setIsEditing(false);
-        fetchApplication();
+        setApplication(restoreApplication);
     }
 
     const handleDelete = useCallback(async () => {
@@ -109,6 +112,7 @@ const ApplicationDetail = () => {
             setError(null);
             await applications.statusChange(id, updateData);
             setApplication((prev) => ({ ...prev, ...updateData }));
+            setRestoreApplication((prev) => ({ ...prev, ...updateData }));
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
             console.error('Error : ', e)
@@ -142,7 +146,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="company"
                             name="company"
-                            value={company}
+                            value={company || ""}
                             type="text"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -155,7 +159,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="roleTitle"
                             name="roleTitle"
-                            value={roleTitle}
+                            value={roleTitle || ""}
                             type="text"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -192,7 +196,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="jobId"
                             name="jobId"
-                            value={jobId}
+                            value={jobId | ""}
                             type="text"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -204,7 +208,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="appliedDate"
                             name="appliedDate"
-                            value={appliedDate}
+                            value={appliedDate | ""}
                             type="date"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -216,7 +220,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="jobUrl"
                             name="jobUrl"
-                            value={jobUrl}
+                            value={jobUrl || ""}
                             type="text"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -228,7 +232,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="source"
                             name="source"
-                            value={source}
+                            value={source || ""}
                             type="text"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -240,7 +244,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="salaryRange"
                             name="salaryRange"
-                            value={salaryRange}
+                            value={salaryRange || ""}
                             type="text"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -252,7 +256,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="location"
                             name="location"
-                            value={location}
+                            value={location || ""}
                             type="text"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -264,7 +268,7 @@ const ApplicationDetail = () => {
                         <Textarea
                             id="notes"
                             name="notes"
-                            value={notes}
+                            value={notes || ""}
                             onChange={handleChange}
                             disabled={!isEditing}
                         />

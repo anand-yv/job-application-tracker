@@ -13,6 +13,7 @@ const ContactDetails = () => {
     const navigate = useNavigate();
 
     const [contact, setContact] = useState({});
+    const [restoreContact, setRestoreContact] = useState({});
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -45,6 +46,7 @@ const ContactDetails = () => {
             const data = res.data;
 
             setContact(data);
+            setRestoreContact(data);
         } catch (e) {
             setError(
                 e.response?.data?.message ||
@@ -80,6 +82,7 @@ const ContactDetails = () => {
             const data = res.data;
 
             setContact(data);
+            setRestoreContact(data);
             setIsEditing(false);
         } catch (e) {
             setError(
@@ -94,7 +97,7 @@ const ContactDetails = () => {
 
     const handleCancel = () => {
         setIsEditing(false);
-        fetchContact();
+        setContact(restoreContact);
     };
 
     const handleDelete = useCallback(async () => {
@@ -266,32 +269,6 @@ const ContactDetails = () => {
                                 value={notes || ""}
                                 onChange={handleChange}
                                 disabled={!isEditing}
-                            />
-                        </div>
-
-                        <div className={styles["field"]}>
-                            <Label htmlFor="createdAt">
-                                Created At :
-                            </Label>
-
-                            <Input
-                                id="createdAt"
-                                value={createdAt || ""}
-                                type="text"
-                                disabled
-                            />
-                        </div>
-
-                        <div className={styles["field"]}>
-                            <Label htmlFor="updatedAt">
-                                Updated At :
-                            </Label>
-
-                            <Input
-                                id="updatedAt"
-                                value={updatedAt || ""}
-                                type="text"
-                                disabled
                             />
                         </div>
                     </form>
