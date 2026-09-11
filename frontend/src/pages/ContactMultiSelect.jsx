@@ -3,7 +3,7 @@ import styles from "./ContactMultiSelect.module.css"
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const ContactMultiSelect = ({ allContacts = [], slectedIds = [], onChange = () => { } }) => {
+const ContactMultiSelect = ({ allContacts = [], selectedIds = [], onChange = () => { } }) => {
     const [isOpen, setIsOpen] = useState(false);
     const multiSelectRef = useRef(null);
 
@@ -34,7 +34,7 @@ const ContactMultiSelect = ({ allContacts = [], slectedIds = [], onChange = () =
                     className={styles["trigger"]}
                     onClick={() => setIsOpen((prev) => !prev)}
                 >
-                    {slectedIds.map((id) => (
+                    {selectedIds.map((id) => (
                         <div
                             key={id}
                             className={styles["selected-item"]}
@@ -50,13 +50,13 @@ const ContactMultiSelect = ({ allContacts = [], slectedIds = [], onChange = () =
             {isOpen && (
                 <div className={styles["popover"]}>
                     {allContacts.map((contact) => {
-                        const isSelected = slectedIds.includes(contact.id);
+                        const isSelected = selectedIds.includes(contact.id);
 
                         return (
                             <div
                                 key={contact.id}
                                 className={styles["option"]}
-                                onClick={() => console.log(contact.id)}
+                                onClick={() => {onChange(contact.id)}}
                             >
                                 <div className={styles["check-icon"]}>
                                     {isSelected && (

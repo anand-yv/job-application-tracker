@@ -1,6 +1,11 @@
 .multi-select{
     position: relative;
     width: fit-content;
+    min-width: 5em;
+}
+
+.trigger{
+    width: 100%;
 }
 
 .popover{
@@ -8,7 +13,7 @@
     top: calc(100% + 0.5em);
     left: 0;
 
-    width: 100%;
+    width: auto;
     padding: 0.25em;
 
     background: var(--popover);

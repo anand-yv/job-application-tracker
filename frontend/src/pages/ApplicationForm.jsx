@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import styles from "./ApplicationForm.module.css"
 import { applications } from "../services/applications";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ContactMultiSelect from "./ContactMultiSelect";
+import { contactService } from "@/services/contactService";
 
 const ApplicationForm = () => {
     const [formData, setFormData] = useState({
@@ -25,6 +26,8 @@ const ApplicationForm = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const naviagte = useNavigate();
+    const [allContacts, setAllContacts] = useState([]);
+    const [selectedContacts, setSelectedContacts] = useState([]);
 
     const handleChange = (e) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -49,7 +52,11 @@ const ApplicationForm = () => {
         try {
             setLoading(true);
             setError(null);
-            const req = await applications.create(buildPayload(formData))
+            const req = await applications.create(buildPayload(formData));
+            if (!req.data?.id) {
+                throw new Error("Application ID was not returned");
+            }
+            const linkContact = await applications.linkContacts(req.data?.id, { contactIds: selectedContacts });
             naviagte(`/applications/${req.data?.id}`);
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
@@ -58,6 +65,28 @@ const ApplicationForm = () => {
             setLoading(false);
         }
     };
+
+    const fetchContacts = useCallback(async () => {
+        try {
+            const res = await contactService.getAll();
+            const data = res.data;
+            setAllContacts(data);
+        } catch (e) {
+            console.error("Error : ", e);
+        }
+    }, []);
+
+    const onContactSelect = (id) => {
+        if (selectedContacts.includes(id)) {
+            setSelectedContacts((prev) => prev.filter((elem) => elem !== id));
+        } else {
+            setSelectedContacts((prev) => ([...prev, id]));
+        }
+    }
+
+    useEffect(() => {
+        fetchContacts();
+    }, []);
 
     return <>
         <form className={styles["container"]} onSubmit={handleSaveApplication}>
@@ -119,31 +148,14 @@ const ApplicationForm = () => {
                         onChange={handleChange} />
                 </div>
 
-                <ContactMultiSelect
-                    allContacts={[
-                        {
-                            id: "1",
-                            name: "Rahul Sharma",
-                            company: "Google",
-                        },
-                        {
-                            id: "2",
-                            name: "Priya Singh",
-                            company: "Microsoft",
-                        },
-                        {
-                            id: "3",
-                            name: "Amit Kumar",
-                            company: "Amazon",
-                        },
-                        {
-                            id: "4",
-                            name: "Neha Verma",
-                            company: "Adobe",
-                        },
-                    ]}
-                    slectedIds={["1", "3"]}
-                />
+                <div className={styles["field"]}>
+                    <Label>Contacts :  </Label>
+                    <ContactMultiSelect
+                        allContacts={allContacts}
+                        selectedIds={selectedContacts}
+                        onChange={(onContactSelect)}
+                    />
+                </div>
                 <div className={styles["field"]}>
                     <Label htmlFor="source">Source : </Label>
                     <Input id="source" name="source" value={formData.source} type="text"
