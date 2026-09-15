@@ -22,19 +22,18 @@ const ApplicationForm = () => {
         salaryRange: "",
         location: "",
         appliedDate: "",
+        selectedContacts: []
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const naviagte = useNavigate();
     const [allContacts, setAllContacts] = useState([]);
-    const [selectedContacts, setSelectedContacts] = useState([]);
 
     const handleChange = (e) => {
         setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
 
     const buildPayload = (formData) => ({
-        ...formData,
         company: formData.company,
         roleTitle: formData.roleTitle,
         jobId: formData.jobId || null,
@@ -45,6 +44,7 @@ const ApplicationForm = () => {
         salaryRange: formData.salaryRange || null,
         location: formData.location || null,
         appliedDate: formData.appliedDate || null,
+        contactIds : formData.selectedContacts || []
     });
 
     const handleSaveApplication = async (e) => {
@@ -52,12 +52,8 @@ const ApplicationForm = () => {
         try {
             setLoading(true);
             setError(null);
-            const req = await applications.create(buildPayload(formData));
-            if (!req.data?.id) {
-                throw new Error("Application ID was not returned");
-            }
-            const linkContact = await applications.linkContacts(req.data?.id, { contactIds: selectedContacts });
-            naviagte(`/applications/${req.data?.id}`);
+            const res = await applications.create(buildPayload(formData));
+            naviagte(`/applications/${res.data?.id}`);
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
             console.error('Error : ', e);
@@ -77,12 +73,13 @@ const ApplicationForm = () => {
     }, []);
 
     const onContactSelect = (id) => {
-        if (selectedContacts.includes(id)) {
-            setSelectedContacts((prev) => prev.filter((elem) => elem !== id));
-        } else {
-            setSelectedContacts((prev) => ([...prev, id]));
-        }
-    }
+        setFormData((prev) => ({
+            ...prev,
+            selectedContacts: prev.selectedContacts.includes(id)
+                ? prev.selectedContacts.filter((elem) => elem !== id)
+                : [...prev.selectedContacts, id]
+        }));
+    };
 
     useEffect(() => {
         fetchContacts();
@@ -152,7 +149,7 @@ const ApplicationForm = () => {
                     <Label>Contacts :  </Label>
                     <ContactMultiSelect
                         allContacts={allContacts}
-                        selectedIds={selectedContacts}
+                        selectedIds={formData.selectedContacts}
                         onChange={(onContactSelect)}
                     />
                 </div>

@@ -7,10 +7,13 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import ContactMultiSelect from "./ContactMultiSelect";
+import { contactService } from "@/services/contactService";
 
 const ApplicationDetail = () => {
     const { id } = useParams();
     const [application, setApplication] = useState({});
+    const [allContacts, setAllContacts] = useState([]);
     const [restoreApplication, setRestoreApplication] = useState({});
     const [loading, setLoading] = useState(true);
     const [actionLoading, setActionLoading] = useState(false);
@@ -21,7 +24,7 @@ const ApplicationDetail = () => {
     const handleChange = (e) => {
         setApplication((prev) => ({ ...prev, [e.target.name]: e.target.value }));
     };
-    
+
     const {
         jobId,
         jobUrl,
@@ -33,6 +36,7 @@ const ApplicationDetail = () => {
         salaryRange,
         location,
         appliedDate,
+        contacts = [],
         createdAt,
         updatedAt
     } = application
@@ -44,7 +48,7 @@ const ApplicationDetail = () => {
             const res = await applications.getById({ id });
             const data = res.data;
             setApplication(data);
-            setRestoreApplication({...data});
+            setRestoreApplication({ ...data });
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.")
             console.error('Error : ', e)
@@ -52,6 +56,21 @@ const ApplicationDetail = () => {
             setLoading(false);
         }
     }, [id])
+
+    const fetchContacts = useCallback(async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const res = await contactService.getAll();
+            const data = res.data;
+            setAllContacts(data);
+        } catch (e) {
+            setError(e.response?.data?.message || "Something went wrong. Please try again.")
+            console.error('Error : ', e)
+        } finally {
+            setLoading(false);
+        }
+    }, [])
 
     const buildPayload = (application) => ({
         company: application.company,
@@ -64,6 +83,7 @@ const ApplicationDetail = () => {
         salaryRange: application.salaryRange || null,
         location: application.location || null,
         appliedDate: application.appliedDate || null,
+        contactIds: application.contacts.map((contact) => contact.id) || []
     });
 
     const handleUpdateApplication = async (e) => {
@@ -74,7 +94,7 @@ const ApplicationDetail = () => {
             const res = await applications.update(id, buildPayload(application));
             const data = res.data;
             setApplication(data);
-            setRestoreApplication({...data});
+            setRestoreApplication({ ...data });
             setIsEditing(false)
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
@@ -121,9 +141,19 @@ const ApplicationDetail = () => {
         }
     }
 
+    const onContactSelect = (id) => {
+        setApplication((prev) => ({
+            ...prev,
+            contactIds: prev.contacts.includes(id)
+                ? prev.contacts.filter((contactId) => contactId !== id) :
+                [...prev.contacs, id]
+        }))
+    }
+
     useEffect(() => {
         fetchApplication();
-    }, [fetchApplication])
+        fetchContacts();
+    }, [fetchApplication, fetchContacts])
 
     return <>
         {loading ? <p>Loading.....</p> : error ? <p>{error}</p> :
@@ -224,6 +254,15 @@ const ApplicationDetail = () => {
                             type="text"
                             onChange={handleChange}
                             disabled={!isEditing}
+                        />
+                    </div>
+
+                    <div className={styles["field"]}>
+                        <Label>Contacts :  </Label>
+                        <ContactMultiSelect
+                            allContacts={allContacts}
+                            selectedIds={contacts.map((contact) => (contact.id))}
+                            onChange={(onContactSelect)}
                         />
                     </div>
 

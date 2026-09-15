@@ -36,23 +36,33 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public JobApplicationResponse createApplication(JobApplicationRequest jobApplicationRequest) {
+    public JobApplicationResponse createApplication(JobApplicationRequest request) {
         User currentUser = currentUserProvider.getCurrentUser();
 
         JobApplication jobApplication = new JobApplication();
         jobApplication.setUser(currentUser);
-        jobApplication.setCompany(jobApplicationRequest.company());
-        jobApplication.setRoleTitle(jobApplicationRequest.roleTitle());
-        jobApplication.setJobId(jobApplicationRequest.jobId());
-        jobApplication.setJobUrl(jobApplicationRequest.jobUrl());
-        if (jobApplicationRequest.status() != null) {
-            jobApplication.setStatus(jobApplicationRequest.status());
+        jobApplication.setCompany(request.company());
+        jobApplication.setRoleTitle(request.roleTitle());
+        jobApplication.setJobId(request.jobId());
+        jobApplication.setJobUrl(request.jobUrl());
+        if (request.status() != null) {
+            jobApplication.setStatus(request.status());
         }
-        jobApplication.setSource(jobApplicationRequest.source());
-        jobApplication.setNotes(jobApplicationRequest.notes());
-        jobApplication.setSalaryRange(jobApplicationRequest.salaryRange());
-        jobApplication.setLocation(jobApplicationRequest.location());
-        jobApplication.setAppliedDate(jobApplicationRequest.appliedDate());
+        jobApplication.setSource(request.source());
+        jobApplication.setNotes(request.notes());
+        jobApplication.setSalaryRange(request.salaryRange());
+        jobApplication.setLocation(request.location());
+        jobApplication.setAppliedDate(request.appliedDate());
+
+        List<UUID> contactIds = request.contactIds() == null ? List.of() : request.contactIds();
+        if (contactIds != null && !contactIds.isEmpty()) {
+            List<Contact> contacts = contactRepository.findByIdInAndUser(contactIds, currentUser);
+
+            if (contacts.size() != contactIds.size()) {
+                throw new ContactNotFoundException("One or more contacts not found");
+            }
+            jobApplication.setContacts(new HashSet<>(contacts));
+        }
 
         JobApplication savedJobApplication = applicationRepository.save(jobApplication);
         return applicationMapper.toResponse(savedJobApplication);
