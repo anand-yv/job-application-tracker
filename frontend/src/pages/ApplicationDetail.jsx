@@ -40,6 +40,7 @@ const ApplicationDetail = () => {
         createdAt,
         updatedAt
     } = application
+    console.log("STATUS ", status)
 
     const fetchApplication = useCallback(async () => {
         try {
@@ -200,7 +201,7 @@ const ApplicationDetail = () => {
                     <div className={styles["field"]}>
                         <Label htmlFor="status">Status : </Label>
                         <Select
-                            value={status}
+                            value={status || ""}
                             onValueChange={(value) => {
                                 const fakeEvent = { target: { name: "status", value } };
                                 isEditing ? handleChange(fakeEvent) : handleStatusChange(fakeEvent);
