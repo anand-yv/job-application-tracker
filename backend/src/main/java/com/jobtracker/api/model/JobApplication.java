@@ -91,4 +91,14 @@ public class JobApplication {
         this.updatedAt = LocalDateTime.now();
     }
 
+    public void addContact(Contact contact){
+        this.contacts.add(contact);
+        contact.getJobApplications().add(this);
+    }
+
+    public void removeContact(Contact contact){
+        this.contacts.remove(contact);
+        contact.getJobApplications().remove(this);
+    }
+
 }

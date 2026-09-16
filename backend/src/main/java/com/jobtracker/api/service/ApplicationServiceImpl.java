@@ -60,8 +60,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 
             if (contacts.size() != contactIds.size()) {
                 throw new ContactNotFoundException("One or more contacts not found");
+            } 
+            
+            for (Contact contact : contacts) {
+                jobApplication.addContact(contact);
             }
-            jobApplication.setContacts(new HashSet<>(contacts));
         }
 
         JobApplication savedJobApplication = applicationRepository.save(jobApplication);
@@ -171,7 +174,10 @@ public class ApplicationServiceImpl implements ApplicationService {
             if (contacts.size() != contactIds.size()) {
                 throw new ContactNotFoundException("One or more contacts not found");
             }
-            jobApplication.setContacts(new HashSet<>(contacts));
+
+            for (Contact contact : contacts) {
+                jobApplication.addContact(contact);
+            }
         }
 
         JobApplication savedJobApplication = applicationRepository.save(jobApplication);
