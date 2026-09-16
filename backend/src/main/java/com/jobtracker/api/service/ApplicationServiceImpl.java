@@ -1,8 +1,11 @@
 package com.jobtracker.api.service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -20,6 +23,8 @@ import com.jobtracker.api.repository.ApplicationRepository;
 import com.jobtracker.api.repository.ContactRepository;
 import com.jobtracker.api.security.CurrentUserProvider;
 
+import jakarta.transaction.Transactional;
+
 @Service
 public class ApplicationServiceImpl implements ApplicationService {
     private final CurrentUserProvider currentUserProvider;
@@ -35,6 +40,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         this.contactRepository = contactRepository;
     }
 
+    @Transactional
     @Override
     public JobApplicationResponse createApplication(JobApplicationRequest request) {
         User currentUser = currentUserProvider.getCurrentUser();
@@ -60,8 +66,8 @@ public class ApplicationServiceImpl implements ApplicationService {
 
             if (contacts.size() != contactIds.size()) {
                 throw new ContactNotFoundException("One or more contacts not found");
-            } 
-            
+            }
+
             for (Contact contact : contacts) {
                 jobApplication.addContact(contact);
             }
@@ -91,41 +97,80 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public JobApplicationResponse updateApplication(UUID id, JobApplicationRequest jobApplicationRequest) {
+    public JobApplicationResponse updateApplication(UUID id, JobApplicationRequest request) {
         User currentUser = currentUserProvider.getCurrentUser();
 
         JobApplication jobApplication = applicationRepository.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new ApplicationNotFoundException("Job application with id " + id + " not found"));
 
-        if (jobApplicationRequest.company() != null) {
-            jobApplication.setCompany(jobApplicationRequest.company());
+        if (request.company() != null) {
+            jobApplication.setCompany(request.company());
         }
-        if (jobApplicationRequest.roleTitle() != null) {
-            jobApplication.setRoleTitle(jobApplicationRequest.roleTitle());
+        if (request.roleTitle() != null) {
+            jobApplication.setRoleTitle(request.roleTitle());
         }
-        if (jobApplicationRequest.jobId() != null) {
-            jobApplication.setJobId(jobApplicationRequest.jobId());
+        if (request.jobId() != null) {
+            jobApplication.setJobId(request.jobId());
         }
-        if (jobApplicationRequest.jobUrl() != null) {
-            jobApplication.setJobUrl(jobApplicationRequest.jobUrl());
+        if (request.jobUrl() != null) {
+            jobApplication.setJobUrl(request.jobUrl());
         }
-        if (jobApplicationRequest.status() != null) {
-            jobApplication.setStatus(jobApplicationRequest.status());
+        if (request.status() != null) {
+            jobApplication.setStatus(request.status());
         }
-        if (jobApplicationRequest.source() != null) {
-            jobApplication.setSource(jobApplicationRequest.source());
+        if (request.source() != null) {
+            jobApplication.setSource(request.source());
         }
-        if (jobApplicationRequest.notes() != null) {
-            jobApplication.setNotes(jobApplicationRequest.notes());
+        if (request.notes() != null) {
+            jobApplication.setNotes(request.notes());
         }
-        if (jobApplicationRequest.salaryRange() != null) {
-            jobApplication.setSalaryRange(jobApplicationRequest.salaryRange());
+        if (request.salaryRange() != null) {
+            jobApplication.setSalaryRange(request.salaryRange());
         }
-        if (jobApplicationRequest.location() != null) {
-            jobApplication.setLocation(jobApplicationRequest.location());
+        if (request.location() != null) {
+            jobApplication.setLocation(request.location());
         }
-        if (jobApplicationRequest.appliedDate() != null) {
-            jobApplication.setAppliedDate(jobApplicationRequest.appliedDate());
+        if (request.appliedDate() != null) {
+            jobApplication.setAppliedDate(request.appliedDate());
+        }
+
+        if (request.contactIds() != null) {
+            Set<UUID> requestedContactIds = new HashSet<>(request.contactIds());
+            Set<Contact> existingContacts = jobApplication.getContacts();
+            Set<UUID> existingContactIds = existingContacts.stream()
+                    .map(Contact::getId)
+                    .collect(Collectors.toSet());
+
+            // Nothing changed
+            if (!existingContactIds.equals(requestedContactIds)) {
+
+                Set<Contact> contactsToRemove = existingContacts.stream()
+                        .filter(contact -> !requestedContactIds.contains(contact.getId()))
+                        .collect(Collectors.toSet());
+
+                Set<UUID> contactIdsToAdd = requestedContactIds.stream()
+                        .filter(contactId -> !existingContactIds.contains(contactId))
+                        .collect(Collectors.toSet());
+
+                for (Contact contact : contactsToRemove) {
+                    jobApplication.removeContact(contact);
+                }
+
+                if (!contactIdsToAdd.isEmpty()) {
+
+                    List<Contact> contactsToAdd = contactRepository
+                            .findByIdInAndUser(new ArrayList<>(contactIdsToAdd), currentUser);
+
+                    if (contactsToAdd.size() != contactIdsToAdd.size()) {
+                        throw new ContactNotFoundException("One or more contacts not found");
+                    }
+
+                    for (Contact contact : contactsToAdd) {
+                        jobApplication.addContact(contact);
+                    }
+                }
+
+            }
         }
 
         JobApplication savedJobApplication = applicationRepository.save(jobApplication);
@@ -170,7 +215,7 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         if (contactIds != null && !contactIds.isEmpty()) {
             List<Contact> contacts = contactRepository.findByIdInAndUser(contactIds, currentUser);
-    
+
             if (contacts.size() != contactIds.size()) {
                 throw new ContactNotFoundException("One or more contacts not found");
             }

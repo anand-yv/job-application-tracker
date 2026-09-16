@@ -26,7 +26,7 @@ const ApplicationForm = () => {
     });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const naviagte = useNavigate();
+    const navigate = useNavigate();
     const [allContacts, setAllContacts] = useState([]);
 
     const handleChange = (e) => {
@@ -44,7 +44,7 @@ const ApplicationForm = () => {
         salaryRange: formData.salaryRange || null,
         location: formData.location || null,
         appliedDate: formData.appliedDate || null,
-        contactIds : formData.selectedContacts || []
+        contactIds : formData.selectedContacts
     });
 
     const handleSaveApplication = async (e) => {
@@ -53,7 +53,7 @@ const ApplicationForm = () => {
             setLoading(true);
             setError(null);
             const res = await applications.create(buildPayload(formData));
-            naviagte(`/applications/${res.data?.id}`);
+            navigate(`/applications/${res.data?.id}`);
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
             console.error('Error : ', e);

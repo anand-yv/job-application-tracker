@@ -144,9 +144,9 @@ const ApplicationDetail = () => {
     const onContactSelect = (id) => {
         setApplication((prev) => ({
             ...prev,
-            contactIds: prev.contacts.includes(id)
-                ? prev.contacts.filter((contactId) => contactId !== id) :
-                [...prev.contacs, id]
+            contacts: prev.contacts.some((contact) => contact.id === id)
+                ? prev.contacts.filter((contact) => contact.id !== id) :
+                [...prev.contacts, {id}]
         }))
     }
 
@@ -226,7 +226,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="jobId"
                             name="jobId"
-                            value={jobId | ""}
+                            value={jobId || ""}
                             type="text"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -238,7 +238,7 @@ const ApplicationDetail = () => {
                         <Input
                             id="appliedDate"
                             name="appliedDate"
-                            value={appliedDate | ""}
+                            value={appliedDate || ""}
                             type="date"
                             onChange={handleChange}
                             disabled={!isEditing}
@@ -263,6 +263,7 @@ const ApplicationDetail = () => {
                             allContacts={allContacts}
                             selectedIds={contacts.map((contact) => (contact.id))}
                             onChange={(onContactSelect)}
+                            disabled={!isEditing}
                         />
                     </div>
 
