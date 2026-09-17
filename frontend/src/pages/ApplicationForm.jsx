@@ -72,12 +72,12 @@ const ApplicationForm = () => {
         }
     }, []);
 
-    const onContactSelect = (id) => {
+    const onContactSelect = (contactId) => {
         setFormData((prev) => ({
             ...prev,
-            selectedContacts: prev.selectedContacts.includes(id)
-                ? prev.selectedContacts.filter((elem) => elem !== id)
-                : [...prev.selectedContacts, id]
+            selectedContacts: prev.selectedContacts.includes(contactId)
+                ? prev.selectedContacts.filter((elem) => elem !== contactId)
+                : [...prev.selectedContacts, contactId]
         }));
     };
 

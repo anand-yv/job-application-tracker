@@ -21,6 +21,4 @@ public interface ApplicationService {
     JobApplicationResponse updateStatus(UUID id, ApplicationStatus applicationStatus);
 
     void deleteApplication(UUID id);
-
-    JobApplicationResponse linkContacts(UUID id, ContactLinkRequest request);
 }

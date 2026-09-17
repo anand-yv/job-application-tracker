@@ -68,11 +68,4 @@ public class ApplicationController {
         applicationService.deleteApplication(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
-
-    @PutMapping ("/{id}/contacts")
-    public ResponseEntity<JobApplicationResponse> linkContacts(@PathVariable UUID id, @RequestBody ContactLinkRequest contactLinkRequest){
-        JobApplicationResponse jobApplicationResponse =  applicationService.linkContacts(id, contactLinkRequest);
-        return ResponseEntity.ok().body(jobApplicationResponse);
-    }
-
 }

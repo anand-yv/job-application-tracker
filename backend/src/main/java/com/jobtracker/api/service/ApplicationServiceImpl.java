@@ -61,7 +61,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         jobApplication.setAppliedDate(request.appliedDate());
 
         List<UUID> contactIds = request.contactIds() == null ? List.of() : request.contactIds();
-        if (contactIds != null && !contactIds.isEmpty()) {
+        if (!contactIds.isEmpty()) {
             List<Contact> contacts = contactRepository.findByIdInAndUser(contactIds, currentUser);
 
             if (contacts.size() != contactIds.size()) {
@@ -96,6 +96,7 @@ public class ApplicationServiceImpl implements ApplicationService {
                 .toList();
     }
 
+    @Transactional 
     @Override
     public JobApplicationResponse updateApplication(UUID id, JobApplicationRequest request) {
         User currentUser = currentUserProvider.getCurrentUser();
@@ -203,30 +204,4 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         applicationRepository.delete(jobApplication);
     }
-
-    @Override
-    public JobApplicationResponse linkContacts(UUID id, ContactLinkRequest request) {
-        User currentUser = currentUserProvider.getCurrentUser();
-
-        JobApplication jobApplication = applicationRepository.findByIdAndUser(id, currentUser)
-                .orElseThrow(() -> new ApplicationNotFoundException("Job application with id " + id + " not found"));
-
-        List<UUID> contactIds = request.contactIds() == null ? List.of() : request.contactIds();
-
-        if (contactIds != null && !contactIds.isEmpty()) {
-            List<Contact> contacts = contactRepository.findByIdInAndUser(contactIds, currentUser);
-
-            if (contacts.size() != contactIds.size()) {
-                throw new ContactNotFoundException("One or more contacts not found");
-            }
-
-            for (Contact contact : contacts) {
-                jobApplication.addContact(contact);
-            }
-        }
-
-        JobApplication savedJobApplication = applicationRepository.save(jobApplication);
-        return applicationMapper.toResponse(savedJobApplication);
-    }
-
 }

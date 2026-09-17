@@ -40,36 +40,27 @@ const ApplicationDetail = () => {
         createdAt,
         updatedAt
     } = application
-    console.log("STATUS ", status)
 
     const fetchApplication = useCallback(async () => {
         try {
-            setLoading(true);
             setError(null);
             const res = await applications.getById({ id });
             const data = res.data;
             setApplication(data);
             setRestoreApplication({ ...data });
         } catch (e) {
-            setError(e.response?.data?.message || "Something went wrong. Please try again.")
-            console.error('Error : ', e)
-        } finally {
-            setLoading(false);
+            setError(e.response?.data?.message || "Something went wrong. Please try again.");
         }
-    }, [id])
+    }, [id]);
 
     const fetchContacts = useCallback(async () => {
         try {
             setLoading(true);
-            setError(null);
             const res = await contactService.getAll();
             const data = res.data;
             setAllContacts(data);
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.")
-            console.error('Error : ', e)
-        } finally {
-            setLoading(false);
         }
     }, [])
 
@@ -84,7 +75,7 @@ const ApplicationDetail = () => {
         salaryRange: application.salaryRange || null,
         location: application.location || null,
         appliedDate: application.appliedDate || null,
-        contactIds: application.contacts.map((contact) => contact.id) || []
+        contactIds: (application.contacts ?? []).map((contact) => contact.id)
     });
 
     const handleUpdateApplication = async (e) => {
@@ -142,18 +133,34 @@ const ApplicationDetail = () => {
         }
     }
 
-    const onContactSelect = (id) => {
+    const onContactSelect = (contactId) => {
         setApplication((prev) => ({
             ...prev,
-            contacts: prev.contacts.some((contact) => contact.id === id)
-                ? prev.contacts.filter((contact) => contact.id !== id) :
-                [...prev.contacts, {id}]
+            contacts: prev.contacts.some((contact) => contact.id === contactId)
+                ? prev.contacts.filter((contact) => contact.id !== contactId) :
+                [...prev.contacts, { id: contactId }]
         }))
     }
 
     useEffect(() => {
-        fetchApplication();
-        fetchContacts();
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+
+                await Promise.all([
+                    fetchApplication(),
+                    fetchContacts()
+                ]);
+
+            } catch (e) {
+                console.error(e);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        loadData();
     }, [fetchApplication, fetchContacts])
 
     return <>
