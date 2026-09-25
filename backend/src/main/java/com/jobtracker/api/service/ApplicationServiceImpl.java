@@ -201,6 +201,11 @@ public class ApplicationServiceImpl implements ApplicationService {
 
         JobApplication jobApplication = applicationRepository.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new ApplicationNotFoundException("Job application with id " + id + " not found"));
+        
+        Set<Contact> existingContacts = new HashSet<>(jobApplication.getContacts());
+        for(Contact contact: existingContacts){
+            jobApplication.removeContact(contact);
+        }
 
         applicationRepository.delete(jobApplication);
     }
