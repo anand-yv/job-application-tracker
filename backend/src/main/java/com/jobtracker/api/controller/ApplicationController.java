@@ -1,8 +1,9 @@
 package com.jobtracker.api.controller;
 
-import java.util.List;
 import java.util.UUID;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.jobtracker.api.dto.ContactLinkRequest;
 import com.jobtracker.api.dto.JobApplicationRequest;
 import com.jobtracker.api.dto.JobApplicationResponse;
 import com.jobtracker.api.dto.UpdateApplicationStatusRequest;
@@ -46,9 +46,9 @@ public class ApplicationController {
     }
 
     @GetMapping
-     public ResponseEntity<List<JobApplicationResponse>> getAllApplicationsForCurrentUser(){
-        List<JobApplicationResponse> jobApplicationResponses = applicationService.getAllApplicationsForCurrentUser();
-        return new ResponseEntity<List<JobApplicationResponse>>(jobApplicationResponses, HttpStatus.OK);
+     public ResponseEntity<Page<JobApplicationResponse>> getAllApplicationsForCurrentUser(Pageable pageable){
+        Page<JobApplicationResponse> jobApplicationResponses = applicationService.getAllApplicationsForCurrentUser(pageable);
+        return ResponseEntity.ok(jobApplicationResponses);
     }
 
     @PutMapping("/{id}")

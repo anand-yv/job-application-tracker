@@ -7,9 +7,10 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.jobtracker.api.dto.ContactLinkRequest;
 import com.jobtracker.api.dto.JobApplicationRequest;
 import com.jobtracker.api.dto.JobApplicationResponse;
 import com.jobtracker.api.exception.ApplicationNotFoundException;
@@ -88,12 +89,10 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public List<JobApplicationResponse> getAllApplicationsForCurrentUser() {
+    public Page<JobApplicationResponse> getAllApplicationsForCurrentUser(Pageable pageable) {
         User currentUser = currentUserProvider.getCurrentUser();
-        List<JobApplication> jobApplications = applicationRepository.findByUser(currentUser);
-        return jobApplications.stream()
-                .map(applicationMapper::toResponse)
-                .toList();
+        Page<JobApplication> jobApplications = applicationRepository.findByUser(currentUser, pageable);
+        return jobApplications.map(applicationMapper::toResponse);
     }
 
     @Transactional 
