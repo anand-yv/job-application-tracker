@@ -89,9 +89,13 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public Page<JobApplicationResponse> getAllApplicationsForCurrentUser(Pageable pageable) {
+    public Page<JobApplicationResponse> getAllApplicationsForCurrentUser(ApplicationStatus status, Pageable pageable) {
         User currentUser = currentUserProvider.getCurrentUser();
-        Page<JobApplication> jobApplications = applicationRepository.findByUser(currentUser, pageable);
+        
+        Page<JobApplication> jobApplications = 
+            status == null ? 
+                applicationRepository.findByUser(currentUser, pageable) :
+                applicationRepository.findByUserAndStatus(currentUser, status, pageable);
         return jobApplications.map(applicationMapper::toResponse);
     }
 

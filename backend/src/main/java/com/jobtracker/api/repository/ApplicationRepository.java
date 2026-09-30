@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.jobtracker.api.model.ApplicationStatus;
 import com.jobtracker.api.model.JobApplication;
 import com.jobtracker.api.model.User;
 
@@ -16,6 +17,8 @@ public interface ApplicationRepository extends JpaRepository<JobApplication, UUI
     List<JobApplication> findByUser(User user);
 
     Page<JobApplication> findByUser(User user, Pageable pageable);
+
+    Page<JobApplication> findByUserAndStatus(User user, ApplicationStatus applicationStatus, Pageable pageable);
 
     Optional<JobApplication> findByIdAndUser(UUID id, User user);
 }

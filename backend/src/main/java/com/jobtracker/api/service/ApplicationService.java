@@ -15,7 +15,7 @@ public interface ApplicationService {
 
     JobApplicationResponse getApplicationById(UUID id);
 
-    Page<JobApplicationResponse> getAllApplicationsForCurrentUser(Pageable pageable);
+    Page<JobApplicationResponse> getAllApplicationsForCurrentUser(ApplicationStatus status,Pageable pageable);
 
     JobApplicationResponse updateApplication(UUID id, JobApplicationRequest jobApplicationRequest);
 

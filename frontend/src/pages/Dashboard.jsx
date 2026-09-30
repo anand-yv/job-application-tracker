@@ -15,7 +15,7 @@ const Dashboard = () => {
             setLoading(true);
             setError(null);
             const res = await applications.getAll();
-            const data = res.data;
+            const data = res.data.content;
             setUserApplications(data);
         } catch (e) {
             setError(e.response?.data?.message || "Something went wrong. Please try again.");
