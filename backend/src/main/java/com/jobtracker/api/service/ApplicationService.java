@@ -7,6 +7,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.jobtracker.api.dto.JobApplicationRequest;
 import com.jobtracker.api.dto.JobApplicationResponse;
+import com.jobtracker.api.dto.JobApplicationSummaryResponse;
 import com.jobtracker.api.model.ApplicationStatus;
 
 public interface ApplicationService {
@@ -15,7 +16,7 @@ public interface ApplicationService {
 
     JobApplicationResponse getApplicationById(UUID id);
 
-    Page<JobApplicationResponse> getAllApplicationsForCurrentUser(ApplicationStatus status,Pageable pageable);
+    Page<JobApplicationSummaryResponse> getAllApplicationsForCurrentUser(ApplicationStatus status,Pageable pageable);
 
     JobApplicationResponse updateApplication(UUID id, JobApplicationRequest jobApplicationRequest);
 

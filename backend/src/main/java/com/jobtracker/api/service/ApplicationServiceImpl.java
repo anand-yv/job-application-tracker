@@ -9,10 +9,12 @@ import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.jobtracker.api.dto.JobApplicationRequest;
 import com.jobtracker.api.dto.JobApplicationResponse;
+import com.jobtracker.api.dto.JobApplicationSummaryResponse;
 import com.jobtracker.api.exception.ApplicationNotFoundException;
 import com.jobtracker.api.exception.ContactNotFoundException;
 import com.jobtracker.api.mapper.ApplicationMapper;
@@ -21,6 +23,7 @@ import com.jobtracker.api.model.Contact;
 import com.jobtracker.api.model.JobApplication;
 import com.jobtracker.api.model.User;
 import com.jobtracker.api.repository.ApplicationRepository;
+import com.jobtracker.api.repository.ApplicationSpecifications;
 import com.jobtracker.api.repository.ContactRepository;
 import com.jobtracker.api.security.CurrentUserProvider;
 
@@ -89,14 +92,17 @@ public class ApplicationServiceImpl implements ApplicationService {
     }
 
     @Override
-    public Page<JobApplicationResponse> getAllApplicationsForCurrentUser(ApplicationStatus status, Pageable pageable) {
+    public Page<JobApplicationSummaryResponse> getAllApplicationsForCurrentUser(ApplicationStatus status, Pageable pageable) {
         User currentUser = currentUserProvider.getCurrentUser();
+
+        Specification<JobApplication> spec = Specification.where(ApplicationSpecifications.hasUser(currentUser));
+
+        if(status != null){
+            spec = spec.and(ApplicationSpecifications.hasStatus(status));
+        }
         
-        Page<JobApplication> jobApplications = 
-            status == null ? 
-                applicationRepository.findByUser(currentUser, pageable) :
-                applicationRepository.findByUserAndStatus(currentUser, status, pageable);
-        return jobApplications.map(applicationMapper::toResponse);
+        Page<JobApplication> jobApplications = applicationRepository.findAll(spec, pageable);
+        return jobApplications.map(applicationMapper::toSummaryResponse);
     }
 
     @Transactional 

@@ -4,21 +4,15 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-import com.jobtracker.api.model.ApplicationStatus;
 import com.jobtracker.api.model.JobApplication;
 import com.jobtracker.api.model.User;
 
-public interface ApplicationRepository extends JpaRepository<JobApplication, UUID>{
+public interface ApplicationRepository extends JpaRepository<JobApplication, UUID>, JpaSpecificationExecutor<JobApplication>{
 
     List<JobApplication> findByUser(User user);
-
-    Page<JobApplication> findByUser(User user, Pageable pageable);
-
-    Page<JobApplication> findByUserAndStatus(User user, ApplicationStatus applicationStatus, Pageable pageable);
 
     Optional<JobApplication> findByIdAndUser(UUID id, User user);
 }

@@ -3,6 +3,7 @@ package com.jobtracker.api.mapper;
 import org.springframework.stereotype.Component;
 
 import com.jobtracker.api.dto.JobApplicationResponse;
+import com.jobtracker.api.dto.JobApplicationSummaryResponse;
 import com.jobtracker.api.model.JobApplication;
 
 @Component
@@ -32,6 +33,16 @@ public class ApplicationMapper {
                 .toList(),
             entity.getCreatedAt(),
             entity.getUpdatedAt()
+        );
+    }
+
+    public JobApplicationSummaryResponse toSummaryResponse(JobApplication entity){
+        return  new JobApplicationSummaryResponse(
+            entity.getId(),
+            entity.getCompany(),
+            entity.getRoleTitle(),
+            entity.getStatus(),
+            entity.getAppliedDate()
         );
     }
 }

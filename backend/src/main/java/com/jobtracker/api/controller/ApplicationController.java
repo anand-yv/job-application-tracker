@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.jobtracker.api.dto.JobApplicationRequest;
 import com.jobtracker.api.dto.JobApplicationResponse;
+import com.jobtracker.api.dto.JobApplicationSummaryResponse;
 import com.jobtracker.api.dto.UpdateApplicationStatusRequest;
 import com.jobtracker.api.model.ApplicationStatus;
 import com.jobtracker.api.service.ApplicationService;
@@ -48,8 +49,8 @@ public class ApplicationController {
     }
 
     @GetMapping
-     public ResponseEntity<Page<JobApplicationResponse>> getAllApplicationsForCurrentUser(@RequestParam(required = false) ApplicationStatus status,  Pageable pageable){
-        Page<JobApplicationResponse> jobApplicationResponses = applicationService.getAllApplicationsForCurrentUser(status, pageable);
+     public ResponseEntity<Page<JobApplicationSummaryResponse>> getAllApplicationsForCurrentUser(@RequestParam(required = false) ApplicationStatus status,  Pageable pageable){
+        Page<JobApplicationSummaryResponse> jobApplicationResponses = applicationService.getAllApplicationsForCurrentUser(status, pageable);
         return ResponseEntity.ok(jobApplicationResponses);
     }
 
