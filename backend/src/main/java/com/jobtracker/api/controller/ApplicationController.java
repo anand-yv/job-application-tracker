@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -49,7 +51,13 @@ public class ApplicationController {
     }
 
     @GetMapping
-     public ResponseEntity<Page<JobApplicationSummaryResponse>> getAllApplicationsForCurrentUser(@RequestParam(required = false) ApplicationStatus status,  Pageable pageable){
+     public ResponseEntity<Page<JobApplicationSummaryResponse>> getAllApplicationsForCurrentUser(@RequestParam(required = false) ApplicationStatus status, 
+        @PageableDefault(
+            sort = "createdAt",
+            direction = Sort.Direction.DESC
+        )
+        Pageable pageable
+    ){
         Page<JobApplicationSummaryResponse> jobApplicationResponses = applicationService.getAllApplicationsForCurrentUser(status, pageable);
         return ResponseEntity.ok(jobApplicationResponses);
     }

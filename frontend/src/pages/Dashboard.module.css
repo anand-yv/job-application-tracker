@@ -32,3 +32,29 @@
 .application-link-index {
     align-self: self-start;
 }
+
+.page-count{
+    display: flex;
+    gap:0.5em;
+    justify-content: center;
+    align-items: center;
+}
+
+.display-list{
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.filters{
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+    justify-content: center;
+}
+
+.status-filter{
+    display: flex;
+    gap: 0.5em;
+    align-items: center;
+}
