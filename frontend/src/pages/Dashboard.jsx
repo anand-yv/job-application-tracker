@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { applications } from "../services/applications";
 import styles from "./Dashboard.module.css"
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import Dropdown from "@/components/Dropdown";
 
 const PAGE_SIZE = 10;
 
@@ -32,7 +32,7 @@ const Dashboard = () => {
             const sort = sortBy
                 ? `${sortBy}${sortOrder ? `,${sortOrder}` : ""}`
                 : undefined;
-            const res = await applications.getAll({ page, size: PAGE_SIZE, status: statusFilter, sort});
+            const res = await applications.getAll({ page, size: PAGE_SIZE, status: statusFilter, sort });
             const data = res.data;
             setPageData({
                 content: data.content || [],
@@ -53,7 +53,7 @@ const Dashboard = () => {
 
     const handleSortByChange = (value) => {
         setSortBy(value === "NONE" ? null : value);
-        if(value === "NONE"){
+        if (value === "NONE") {
             setSortOrder(null);
         }
         setPage(0);
@@ -74,51 +74,55 @@ const Dashboard = () => {
             <div className={styles["header"]}>
                 <h5>Applications </h5>
                 <Button onClick={fetchApplications}>Refresh</Button>
-                <Button onClick={() =>  navigate("/applications/new") }>Create Application</Button>
+                <Button onClick={() => navigate("/applications/new")}>Create Application</Button>
             </div>
 
             <div className={styles["display-list"]}>
                 <div className={styles["status-filter"]}>
                     <Label htmlFor="status">STATUS : </Label>
-                    <Select value={statusFilter || "ALL"} onValueChange={handleStatusChange} >
-                        <SelectTrigger id="status">
-                            <SelectValue placeholder="Select status to filter" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="ALL">All Statuses</SelectItem>
-                            <SelectItem value="APPLIED">Applied</SelectItem>
-                            <SelectItem value="SCREENING">Screening</SelectItem>
-                            <SelectItem value="INTERVIEW">Interview</SelectItem>
-                            <SelectItem value="OFFER">Offer</SelectItem>
-                            <SelectItem value="REJECTED">Rejected</SelectItem>
-                            <SelectItem value="WITHDRAWN">Withdrawn</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <Dropdown
+                        id={"status"}
+                        value={statusFilter || "ALL"}
+                        onChange={handleStatusChange}
+                        placeholder="Select status to filter"
+                        options={[
+                            { value: "ALL", label: "All Statuses" },
+                            { value: "APPLIED", label: "Applied" },
+                            { value: "SCREENING", label: "Screening" },
+                            { value: "INTERVIEW", label: "Interview" },
+                            { value: "OFFER", label: "Offer" },
+                            { value: "REJECTED", label: "Rejected" },
+                            { value: "WITHDRAWN", label: "Withdrawn" },
+                        ]}
+                    />
                 </div>
 
                 <div className={styles["sort"]}>
                     <div className={styles["status-filter"]}>
                         <Label htmlFor="sortBy">SORT BY: </Label>
-                        <Select value={sortBy || "NONE"} onValueChange={handleSortByChange}>
-                            <SelectTrigger id="sortBy">
-                                <SelectValue placeholder="Select field for sorting" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="NONE">NONE</SelectItem>
-                                <SelectItem value="appliedDate">APPLIED DATE</SelectItem>
-                                <SelectItem value="company">COMPANY</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Dropdown
+                            id={"sortBy"}
+                            value={sortBy || "NONE"}
+                            onChange={handleSortByChange}
+                            placeholder={"Select field for sorting"}
+                            options={[
+                                { value: "NONE", label: "NONE" },
+                                { value: "appliedDate", label: "APPLIED DATE" },
+                                { value: "company", label: "COMPANY" },
+                            ]}
+                        />
                         <Label htmlFor="orderBy">SORT ORDER:</Label>
-                        <Select value={sortOrder} onValueChange={handleSortOrderChange} disabled={!sortBy}>
-                            <SelectTrigger id="orderBy">
-                                <SelectValue placeholder="Select direction for sorting" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="asc">ASCENDING</SelectItem>
-                                <SelectItem value="desc">DESCENDING</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        <Dropdown
+                            id={"orderBy"}
+                            value={sortOrder}
+                            onChange={handleSortOrderChange}
+                            placeholder={"Select direction for sorting"}
+                            options={[
+                                { value: "asc", label: "ASCENDING" },
+                                { value: "desc", label: "DESCENDING" }
+                            ]}
+                            disabled={!sortBy}
+                        />
                     </div>
                 </div>
 

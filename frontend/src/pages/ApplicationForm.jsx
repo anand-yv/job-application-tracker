@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import ContactMultiSelect from "./ContactMultiSelect";
+import ContactMultiSelect from "../components/ContactMultiSelect";
 import { contactService } from "@/services/contactService";
+import Dropdown from "@/components/Dropdown";
 
 const ApplicationForm = () => {
     const [formData, setFormData] = useState({
@@ -44,7 +44,7 @@ const ApplicationForm = () => {
         salaryRange: formData.salaryRange || null,
         location: formData.location || null,
         appliedDate: formData.appliedDate || null,
-        contactIds : formData.selectedContacts
+        contactIds: formData.selectedContacts
     });
 
     const handleSaveApplication = async (e) => {
@@ -112,19 +112,20 @@ const ApplicationForm = () => {
 
                 <div className={styles["field"]}>
                     <Label htmlFor="status">Status : </Label>
-                    <Select value={formData.status} onValueChange={(value) => handleChange({ target: { name: "status", value } })}>
-                        <SelectTrigger id="status">
-                            <SelectValue placeholder="Select status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="APPLIED">Applied</SelectItem>
-                            <SelectItem value="SCREENING">Screening</SelectItem>
-                            <SelectItem value="INTERVIEW">Interview</SelectItem>
-                            <SelectItem value="OFFER">Offer</SelectItem>
-                            <SelectItem value="REJECTED">Rejected</SelectItem>
-                            <SelectItem value="WITHDRAWN">Withdrawn</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <Dropdown
+                        id={"status"}
+                        value={formData.status}
+                        placeholder={"Select status"}
+                        onChange={(value) => handleChange({ target: { name: "status", value } })}
+                        options={[
+                            { value: "APPLIED", label: "Applied" },
+                            { value: "SCREENING", label: "Screening" },
+                            { value: "INTERVIEW", label: "Interview" },
+                            { value: "OFFER", label: "Offer" },
+                            { value: "REJECTED", label: "Rejected" },
+                            { value: "WITHDRAWN", label: "Withdrawn" },
+                        ]}
+                    />
                 </div>
 
                 <div className={styles["field"]}>

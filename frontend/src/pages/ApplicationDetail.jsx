@@ -6,9 +6,9 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import ContactMultiSelect from "./ContactMultiSelect";
+import ContactMultiSelect from "../components/ContactMultiSelect";
 import { contactService } from "@/services/contactService";
+import Dropdown from "@/components/Dropdown";
 
 const ApplicationDetail = () => {
     const { id } = useParams();
@@ -207,26 +207,24 @@ const ApplicationDetail = () => {
 
                     <div className={styles["field"]}>
                         <Label htmlFor="status">Status : </Label>
-                        <Select
+                        <Dropdown
+                            id={"status"}
                             value={status || ""}
-                            onValueChange={(value) => {
+                            placeholder={"Select status"}
+                            onChange={(value) => {
                                 const fakeEvent = { target: { name: "status", value } };
                                 isEditing ? handleChange(fakeEvent) : handleStatusChange(fakeEvent);
                             }}
+                            options={[
+                                { value: "APPLIED", label: "Applied" },
+                                { value: "SCREENING", label: "Screening" },
+                                { value: "INTERVIEW", label: "Interview" },
+                                { value: "OFFER", label: "Offer" },
+                                { value: "REJECTED", label: "Rejected" },
+                                { value: "WITHDRAWN", label: "Withdrawn" },
+                            ]}
                             disabled={actionLoading}
-                        >
-                            <SelectTrigger id="status">
-                                <SelectValue placeholder="Select status" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="APPLIED">Applied</SelectItem>
-                                <SelectItem value="SCREENING">Screening</SelectItem>
-                                <SelectItem value="INTERVIEW">Interview</SelectItem>
-                                <SelectItem value="OFFER">Offer</SelectItem>
-                                <SelectItem value="REJECTED">Rejected</SelectItem>
-                                <SelectItem value="WITHDRAWN">Withdrawn</SelectItem>
-                            </SelectContent>
-                        </Select>
+                        />
                     </div>
 
                     <div className={styles["field"]}>
