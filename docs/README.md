@@ -32,7 +32,7 @@ content (including ticking checkboxes), edit the markdown and refresh.
 ## Conventions
 
 - Checkboxes (`- [ ]` / `- [x]`) in the features files so progress is easy to tick off.
-- Issues in `known-issues.md` have stable IDs (`KI-01`, `KI-02`, …). Link to them
+- Issues in `known-issues.md` have stable IDs (`KI-05`, `KI-06`, …). Link to them
   from other files instead of repeating the description.
 - Don't duplicate content between files — link instead.
 

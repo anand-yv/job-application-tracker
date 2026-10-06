@@ -9,7 +9,6 @@ delete outright or needs a decision first. Remove the entry once it's deleted.
 |---|---|---|---|
 | `ContactLinkRequest` DTO | `dto/ContactLinkRequest.java` | Was used by `PUT /applications/{id}/contacts` (`linkContacts`), removed in commit `a1f790d`. Linking now goes through `JobApplicationRequest.contactIds` | **Safe to delete** |
 | `ApplicationRepository.findByUser(User)` | `repository/ApplicationRepository.java` | Replaced by `findAll(Specification, Pageable)`; no callers | **Safe to delete** |
-| `TestController` | `controller/TestController.java` | Debug endpoints, not called by the frontend; also a Critical security hole ([KI-01](known-issues.md#ki-01)) | **Delete** (or restrict to `@Profile("dev")`) |
 | Commented-out specs `hasCompany`, `hasRoleTitle`, `hasSalaryRange`, `hasLocation` | `repository/ApplicationSpecifications.java` | Never wired up; exact-match only | **Decide:** keep as a starting point for the "More filters" item in [features-todo.md](features-todo.md) (rewrite with `like`), otherwise delete |
 | Commented-out `CommandLineRunner testJwt` bean | `JobTrackerApplication.java` | Early manual JWT smoke test that prints to stdout | **Safe to delete** |
 | Redundant `if (applicationStatus == null)` check | `ApplicationServiceImpl.updateStatus` | The DTO already has `@NotNull`, and the check runs after the DB lookup | **Safe to delete** |

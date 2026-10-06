@@ -53,6 +53,7 @@ public class Contact {
 
     private String position;
 
+    @Column(columnDefinition = "text")
     private String notes;
 
     @ToString.Exclude

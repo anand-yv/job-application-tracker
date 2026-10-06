@@ -258,6 +258,7 @@ const ApplicationDetail = () => {
                             name="jobUrl"
                             value={jobUrl || ""}
                             type="text"
+                            maxLength={2048}
                             onChange={handleChange}
                             disabled={!isEditing}
                         />
@@ -315,6 +316,7 @@ const ApplicationDetail = () => {
                             id="notes"
                             name="notes"
                             value={notes || ""}
+                            maxLength={10000}
                             onChange={handleChange}
                             disabled={!isEditing}
                         />

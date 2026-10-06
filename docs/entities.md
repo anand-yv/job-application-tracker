@@ -9,7 +9,7 @@ there are no migration scripts. All primary keys are `UUID` with
 [KI-08](known-issues.md#ki-08)).
 
 Unless stated otherwise, `String` fields map to `varchar(255)` (Hibernate
-default — see [KI-03](known-issues.md#ki-03)).
+default).
 
 ## Relationship overview
 
@@ -50,10 +50,10 @@ Table: `job_applications`
 | `roleTitle` | `String` | `role_title` | `NOT NULL` |
 | `company` | `String` | `company` | `NOT NULL` |
 | `jobId` | `String` | `job_id` | External job ID |
-| `jobUrl` | `String` | `job_url` | varchar(255) |
+| `jobUrl` | `String` | `job_url` | varchar(2048). Request `@Size(max = 2048)` |
 | `status` | `ApplicationStatus` | `status` | `NOT NULL`, `@Enumerated(EnumType.STRING)` (stored as varchar). Defaults to `APPLIED` in Java |
 | `source` | `String` | `source` | Free text (e.g. LinkedIn) |
-| `notes` | `String` | `notes` | varchar(255) |
+| `notes` | `String` | `notes` | `text`. Request `@Size(max = 10000)` |
 | `salaryRange` | `String` | `salary_range` | Free text |
 | `location` | `String` | `location` | |
 | `appliedDate` | `LocalDate` | `applied_date` | |
@@ -83,7 +83,7 @@ Table: `contacts` — `UNIQUE (user_id, email)`
 | `phone` | `String` | `phone` | |
 | `company` | `String` | `company` | |
 | `position` | `String` | `position` | |
-| `notes` | `String` | `notes` | varchar(255) |
+| `notes` | `String` | `notes` | `text`. Request `@Size(max = 10000)` |
 | `jobApplications` | `Set<JobApplication>` | — | `@ManyToMany` **owning side**, `@JoinTable(name = "application_contacts", joinColumns = contact_id, inverseJoinColumns = application_id)`. Excluded from Lombok `toString`/`equals`/`hashCode` |
 | `createdAt` | `LocalDateTime` | `created_at` | `@PrePersist` |
 | `updatedAt` | `LocalDateTime` | `updated_at` | `@PrePersist` / `@PreUpdate` |

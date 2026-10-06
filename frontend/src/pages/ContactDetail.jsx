@@ -267,6 +267,7 @@ const ContactDetails = () => {
                                 id="notes"
                                 name="notes"
                                 value={notes || ""}
+                                maxLength={10000}
                                 onChange={handleChange}
                                 disabled={!isEditing}
                             />

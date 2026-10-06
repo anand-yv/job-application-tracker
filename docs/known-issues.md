@@ -14,10 +14,6 @@ the text. When an issue is fixed, delete its entry (git history keeps it).
 
 | ID | Severity | Area | Title |
 |---|---|---|---|
-| [KI-01](#ki-01) | Critical | Backend / security | `TestController` lets any user mint a token for any email |
-| [KI-02](#ki-02) | High | Backend + frontend | Optional application fields can't be cleared on edit |
-| [KI-03](#ki-03) | High | Database | `notes` / `jobUrl` limited to 255 chars → 500 on longer input |
-| [KI-04](#ki-04) | High | Backend / security | `/auth/me` is public; returns 500 without a token |
 | [KI-05](#ki-05) | Medium | Backend | `deleteApplication` / reads rely on open-session-in-view, not transactions |
 | [KI-06](#ki-06) | Medium | Backend | `jakarta.transaction.Transactional` used instead of Spring's |
 | [KI-07](#ki-07) | Medium | Backend | Common bad inputs return 500 instead of 4xx |
@@ -28,7 +24,6 @@ the text. When an issue is fixed, delete its entry (git history keeps it).
 | [KI-12](#ki-12) | Low | Backend | Inconsistent HTTP status for "already exists" (400 vs 409) |
 | [KI-13](#ki-13) | Low | Backend / security | Generic 500 handler leaks exception class names |
 | [KI-14](#ki-14) | Low | Backend / security | Account enumeration via register message and login timing |
-| [KI-15](#ki-15) | Low | Backend | Inconsistent PUT semantics between applications and contacts |
 | [KI-16](#ki-16) | Low | Backend / perf | Eager `@ManyToOne` and lazy-collection loading on link/unlink |
 | [KI-17](#ki-17) | Low | Backend | `CurrentUserProvider` throws a bare `RuntimeException` |
 | [KI-18](#ki-18) | Low | Config | Timezone only set via Maven plugin; `show-sql: true`; unneeded `allowCredentials` |
@@ -38,84 +33,6 @@ the text. When an issue is fixed, delete its entry (git history keeps it).
 | [KI-22](#ki-22) | Low | Frontend | `useEffect` dependency warnings and double navigation on logout |
 | [KI-23](#ki-23) | Low | Frontend | Inconsistent service function signatures and file names |
 | [KI-24](#ki-24) | Low | Tests | Only test is `contextLoads()`, which needs a live database |
-
----
-
-<a id="ki-01"></a>
-## KI-01 — `TestController` lets any user mint a token for any email · **Critical**
-
-**Where:** `backend/.../controller/TestController.java`
-
-`POST /test/generate-token?email=<anyone>` returns a valid, signed JWT for the
-given email. The endpoint only requires *some* valid token, so any registered
-user can impersonate any other user and read/modify/delete their data.
-
-**Fix:** Delete `TestController` (it's not used by the frontend). If you want
-to keep it for local debugging, annotate it with `@Profile("dev")` and make
-sure the dev profile is never active in deployed environments.
-
----
-
-<a id="ki-02"></a>
-## KI-02 — Optional application fields can't be cleared on edit · **High**
-
-**Where:** `ApplicationServiceImpl.updateApplication`, `ApplicationDetail.jsx` (`buildPayload`)
-
-The frontend sends `field || null` for empty optional fields. The backend
-treats `null` as "don't change" (`if (request.x() != null) set…`). So clearing
-`notes`, `jobUrl`, `jobId`, `source`, `salaryRange`, `location`, or
-`appliedDate` and saving silently keeps the old value.
-
-**Fix (pick one):**
-- Make `PUT` a full replacement: always assign every field from the request
-  (like `ContactServiceImpl.updateContact` already does). `@NotBlank` still
-  protects `company`/`roleTitle`. Keep `contactIds == null` meaning "unchanged"
-  if desired.
-- Or keep partial semantics but move them to a `PATCH` endpoint, and have the
-  frontend send `""` → backend converts blank strings to `null`.
-
-The first option is simpler and matches the frontend, which always sends the
-full object.
-
----
-
-<a id="ki-03"></a>
-## KI-03 — `notes` / `jobUrl` limited to 255 chars → 500 on longer input · **High**
-
-**Where:** `JobApplication.notes`, `JobApplication.jobUrl`, `Contact.notes`
-
-Plain `String` fields map to `varchar(255)`. Notes and job URLs (tracking
-parameters are common) easily exceed that; Postgres rejects the insert and the
-generic handler returns a 500 "Something went wrong".
-
-**Fix:** Annotate long-text fields with `@Column(columnDefinition = "TEXT")`
-(or `@Lob`/`length = 2048` for URLs). Because `ddl-auto: update` does **not**
-widen existing columns, also run `ALTER TABLE … ALTER COLUMN … TYPE TEXT`
-manually or via a migration ([KI-11](#ki-11)). Add matching `@Size` limits to
-the DTOs ([KI-10](#ki-10)).
-
----
-
-<a id="ki-04"></a>
-## KI-04 — `/auth/me` is public; returns 500 without a token · **High**
-
-**Where:** `SecurityConfig.appSecurityFilterChain`
-
-```java
-.requestMatchers("/auth/**").permitAll()
-.requestMatchers("/auth/me").authenticated()   // never reached
-```
-
-Spring Security uses the first matching rule, so `/auth/me` is `permitAll`.
-Without a token the principal is `"anonymousUser"`, `CurrentUserProvider`
-throws `RuntimeException`, and the client gets a 500 instead of 401.
-
-**Fix:** Put the specific rule first, or permit only what's needed:
-
-```java
-.requestMatchers("/auth/login", "/auth/register").permitAll()
-.anyRequest().authenticated()
-```
 
 ---
 
@@ -165,8 +82,7 @@ These fall through to the generic `Exception` handler (500):
 | Invalid enum in query (`?status=FOO`) | `MethodArgumentTypeMismatchException` | 400 |
 | Unknown sort field (`?sort=foo`) | `PropertyReferenceException` | 400 |
 | Unique-constraint race (duplicate email) | `DataIntegrityViolationException` | 409 |
-| Value too long ([KI-03](#ki-03)) | `DataIntegrityViolationException` | 400 |
-| `IllegalArgumentException` (e.g. `updateStatus`) | `IllegalArgumentException` | 400 |
+| Value longer than a `varchar` column | `DataIntegrityViolationException` | 400 |
 | Authenticated but user row missing ([KI-17](#ki-17)) | `RuntimeException` | 401 |
 
 **Fix:** Add `@ExceptionHandler`s for the exceptions above. Optionally
@@ -215,7 +131,7 @@ login, and contact create/update. Existing rows may need a one-off cleanup.
 
 - No `@Email` on `AuthRequest.email` or `ContactRequest.email`.
 - No password rule beyond `@NotBlank` (a 1-char password is accepted).
-- No `@Size` limits on any string field (pairs with [KI-03](#ki-03)).
+- No `@Size` limits on most string fields. `notes` (10000) and `jobUrl` (2048) are limited.
 - No URL validation on `jobUrl`.
 - `Register.jsx` inputs lack `required`; the password-match check is client-only (acceptable, but there's no server-side minimum).
 
@@ -229,9 +145,9 @@ column lengths, and `required`/`minLength` on the Register inputs.
 
 **Where:** `application.yaml`, `application-sample.yaml`
 
-`update` never drops/alters column types or constraints, so schema fixes (like
-[KI-03](#ki-03)) don't apply to existing databases, and there's no reproducible
-schema for a fresh deploy.
+`update` never drops/alters column types or constraints, so later schema
+fixes don't apply to existing databases, and there's no reproducible schema
+for a fresh deploy.
 
 **Fix:** Add Flyway, create a baseline migration from the current schema, and
 switch to `ddl-auto: validate`. Tracked in [features-todo.md](features-todo.md).
@@ -270,14 +186,6 @@ found. Accept the register message as a UX trade-off, or add rate limiting
 
 ---
 
-<a id="ki-15"></a>
-## KI-15 — Inconsistent PUT semantics · **Low**
-
-`PUT /contacts/{id}` overwrites every field; `PUT /applications/{id}` only
-applies non-null fields. Resolved by the [KI-02](#ki-02) fix.
-
----
-
 <a id="ki-16"></a>
 ## KI-16 — Eager `@ManyToOne` and lazy-collection loading on link/unlink · **Low**
 
@@ -295,8 +203,7 @@ Also add `nullable = false` to the `user_id` join columns.
 <a id="ki-17"></a>
 ## KI-17 — `CurrentUserProvider` throws a bare `RuntimeException` · **Low**
 
-If a valid token belongs to a user that no longer exists (or the principal is
-anonymous — [KI-04](#ki-04)), the client gets a 500.
+If a valid token belongs to a user that no longer exists, the client gets a 500.
 
 **Fix:** Throw an `AuthenticationException`-style custom exception mapped to 401.
 

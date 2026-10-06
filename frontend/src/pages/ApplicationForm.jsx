@@ -143,7 +143,7 @@ const ApplicationForm = () => {
                 <div className={styles["field"]}>
                     <Label htmlFor="jobUrl">Job URL : </Label>
                     <Input id="jobUrl" name="jobUrl" value={formData.jobUrl} type="text"
-                        onChange={handleChange} />
+                        maxLength={2048} onChange={handleChange} />
                 </div>
 
                 <div className={styles["field"]}>
@@ -175,7 +175,7 @@ const ApplicationForm = () => {
                 <div className={styles["field"]}>
                     <Label htmlFor="notes">Notes : </Label>
                     <Textarea id="notes" name="notes" value={formData.notes}
-                        onChange={handleChange} />
+                        maxLength={10000} onChange={handleChange} />
                 </div>
             </div>
         </form>

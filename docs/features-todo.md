@@ -18,11 +18,6 @@ feature is fully done, then move it to [features-done.md](features-done.md).
 
 ---
 
-## P0 — Fix before new features
-
-- [ ] **Resolve Critical/High issues** — [KI-01](known-issues.md#ki-01), [KI-02](known-issues.md#ki-02), [KI-03](known-issues.md#ki-03), [KI-04](known-issues.md#ki-04)
-  - Layers: BE, DB, FE · Status: not started
-
 ## P1 — Core
 
 - [ ] **Application status history (audit trail)**

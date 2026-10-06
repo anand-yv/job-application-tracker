@@ -64,6 +64,11 @@ public class GlobalExceptionHandler {
         return buildErrorResponse("Malformed JSON request", HttpStatus.BAD_REQUEST, ex);
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgument(IllegalArgumentException ex){
+        return buildErrorResponse(ex.getMessage(), HttpStatus.BAD_REQUEST, ex);
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGeneric(Exception ex){
         logger.error("Unhandled exception occured : ", ex);

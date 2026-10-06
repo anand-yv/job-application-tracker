@@ -49,7 +49,7 @@ public class JobApplication {
     @Column(name = "job_id")
     private String jobId;
 
-    @Column(name = "job_url")
+    @Column(name = "job_url", length = 2048)
     private String jobUrl;
 
     @Column(nullable = false)
@@ -58,6 +58,7 @@ public class JobApplication {
 
     private String source;
 
+    @Column(columnDefinition = "text")
     private String notes;
 
     @Column(name = "salary_range")

@@ -7,9 +7,8 @@ Base URL (dev): `http://localhost:8080` (frontend reads it from `VITE_API_URL`).
 Configured in `config/SecurityConfig.java`:
 
 - Stateless JWT. Send `Authorization: Bearer <token>`.
-- `/auth/**` → public. Everything else → authenticated.
-- A rule marking `/auth/me` as authenticated exists but is shadowed by the
-  earlier `/auth/**` permit — see [KI-04](known-issues.md#ki-04).
+- `/auth/login` and `/auth/register` are public. Every other path, including
+  `/auth/me`, requires a JWT.
 - Invalid/expired token → `401` with `ErrorResponse` body
   (`JwtAuthFilter` + `CustomAuthenticationEntryPoint`).
 - Ownership: every application/contact lookup is scoped to the current user;
@@ -28,7 +27,8 @@ Exception → status mapping (`GlobalExceptionHandler`):
 `EmailAlreadyExistsException` 400 · `InvalidCredentialsException` 401 ·
 `ApplicationNotFoundException` 404 · `ContactNotFoundException` 404 ·
 `ContactAlreadyExistsException` 409 · `MethodArgumentNotValidException` 400
-(first field error) · `HttpMessageNotReadableException` 400 · anything else 500
+(first field error) · `HttpMessageNotReadableException` 400 ·
+`IllegalArgumentException` 400 · anything else 500
 (see [KI-07](known-issues.md#ki-07)).
 
 ---
@@ -39,7 +39,7 @@ Exception → status mapping (`GlobalExceptionHandler`):
 |---|---|---|---|---|---|
 | POST | `/auth/register` | `AuthRequest` | `200` `AuthResponse` | Public | Create a LOCAL user (BCrypt) and return a JWT. `400` if email exists |
 | POST | `/auth/login` | `AuthRequest` | `200` `AuthResponse` | Public | Verify credentials, return a JWT. `401` on bad credentials |
-| GET | `/auth/me` | — | `200` `AuthResponse` (`token: null`) | Intended: protected. Actual: public ([KI-04](known-issues.md#ki-04)) | Current user's email and timestamps |
+| GET | `/auth/me` | — | `200` `AuthResponse` (`token: null`) | Protected | Current user's email and timestamps |
 
 **`AuthRequest`**
 
@@ -59,7 +59,7 @@ Exception → status mapping (`GlobalExceptionHandler`):
 | POST | `/applications` | `JobApplicationRequest` | `201` `JobApplicationResponse` | Protected | Create an application; optionally link contacts via `contactIds` |
 | GET | `/applications` | Query params (below) | `200` `Page<JobApplicationSummaryResponse>` | Protected | Paginated list of the user's applications, optional status filter and sort |
 | GET | `/applications/{id}` | — | `200` `JobApplicationResponse` | Protected | Get one application (with contacts) |
-| PUT | `/applications/{id}` | `JobApplicationRequest` | `200` `JobApplicationResponse` | Protected | Update — non-null fields only ([KI-02](known-issues.md#ki-02)); syncs contact links if `contactIds` is non-null |
+| PUT | `/applications/{id}` | `JobApplicationRequest` | `200` `JobApplicationResponse` | Protected | Full replacement. Null clears an optional field. Missing status returns `400` |
 | PATCH | `/applications/{id}/status` | `UpdateApplicationStatusRequest` | `200` `JobApplicationResponse` | Protected | Change only the status |
 | DELETE | `/applications/{id}` | — | `204` | Protected | Unlink all contacts, then delete the application |
 
@@ -79,14 +79,14 @@ Exception → status mapping (`GlobalExceptionHandler`):
 | `company` | `String` | `@NotBlank` |
 | `roleTitle` | `String` | `@NotBlank` |
 | `jobId` | `String` | |
-| `jobUrl` | `String` | |
+| `jobUrl` | `String` | `@Size(max = 2048)` |
 | `source` | `String` | |
-| `notes` | `String` | |
+| `notes` | `String` | `@Size(max = 10000)` |
 | `salaryRange` | `String` | |
 | `location` | `String` | |
 | `status` | `ApplicationStatus` | Optional; defaults to `APPLIED` on create |
 | `appliedDate` | `LocalDate` (`yyyy-MM-dd`) | |
-| `contactIds` | `List<UUID>` | Must all belong to the user, else `404`. On update: `null` = leave links alone, `[]` = remove all |
+| `contactIds` | `List<UUID>` | Must all belong to the user, else `404`. `null` and `[]` both mean no contacts |
 
 **`JobApplicationResponse`**: `id`, `jobId`, `jobUrl`, `company`, `roleTitle`,
 `status`, `source`, `notes`, `salaryRange`, `location`, `appliedDate`,
@@ -121,18 +121,7 @@ Exception → status mapping (`GlobalExceptionHandler`):
 | `phone` | `String` | |
 | `company` | `String` | |
 | `position` | `String` | |
-| `notes` | `String` | |
+| `notes` | `String` | `@Size(max = 10000)` |
 
 **`ContactResponse`**: `id`, `name`, `email`, `phone`, `company`, `position`,
 `notes`, `createdAt`, `updatedAt` (no linked applications)
-
----
-
-## TestController — `/test` (debug only)
-
-| Method | Path | Request | Response | Auth | Description |
-|---|---|---|---|---|---|
-| POST | `/test/generate-token` | `?email=` | `200` raw JWT string | Protected | Mints a valid JWT for **any** email — [KI-01](known-issues.md#ki-01) (Critical) |
-| POST | `/test/validate-token` | `?token=` | `200` email string | Protected | Decodes a JWT and returns its subject |
-
-Not called by the frontend. Slated for removal — see [dead-code.md](dead-code.md).

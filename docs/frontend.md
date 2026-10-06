@@ -20,7 +20,7 @@ Provider tree (`main.jsx`): `BrowserRouter` → `ThemeProvider` → `AuthProvide
 | `/register` | `GuestRoute` | `Register` (`pages/Register.jsx`) | Working; password-match check is client-side only |
 | `/dashboard` | `ProtectedRoute` | `Dashboard` (`pages/Dashboard.jsx`) | Working — application list, status filter, sort by applied date / company, asc/desc, pagination (10/page) |
 | `/applications/new` | `ProtectedRoute` | `ApplicationForm` (`pages/ApplicationForm.jsx`) | Working — create with contact multi-select |
-| `/applications/:id` | `ProtectedRoute` | `ApplicationDetail` (`pages/ApplicationDetail.jsx`) | Working — view, edit/save/cancel, delete, inline status change in view mode, contact linking. Affected by [KI-02](known-issues.md#ki-02) |
+| `/applications/:id` | `ProtectedRoute` | `ApplicationDetail` (`pages/ApplicationDetail.jsx`) | Working — view, edit/save/cancel, delete, inline status change in view mode, contact linking |
 | `/contacts` | `ProtectedRoute` | `Contact` (`pages/Contact.jsx`) | Working — list, refresh, "Create contact" |
 | `/contacts/new` | `ProtectedRoute` | `ContactForm` (`pages/ContactForm.jsx`) | Working |
 | `/contacts/:id` | `ProtectedRoute` | `ContactDetails` (`pages/ContactDetail.jsx`) | Working — view, edit/save/cancel, delete. Doesn't show linked applications |
@@ -103,8 +103,7 @@ Constants (`src/constant.js`): `TOKEN_KEY = "access_token"`, `THEME_KEY = "theme
 | `deleteContactById(id)` | `DELETE /contacts/{id}` |
 
 Every frontend call maps to an existing backend endpoint
-([api-endpoints.md](api-endpoints.md)); the only backend endpoints with no
-frontend caller are the `/test/*` debug endpoints.
+([api-endpoints.md](api-endpoints.md)).
 
 ---
 

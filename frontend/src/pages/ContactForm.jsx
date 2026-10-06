@@ -164,6 +164,7 @@ const ContactForm = () => {
                         id="notes"
                         name="notes"
                         value={formData.notes}
+                        maxLength={10000}
                         onChange={handleChange}
                     />
                 </div>

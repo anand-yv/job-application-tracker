@@ -113,73 +113,52 @@ public class ApplicationServiceImpl implements ApplicationService {
         JobApplication jobApplication = applicationRepository.findByIdAndUser(id, currentUser)
                 .orElseThrow(() -> new ApplicationNotFoundException("Job application with id " + id + " not found"));
 
-        if (request.company() != null) {
-            jobApplication.setCompany(request.company());
-        }
-        if (request.roleTitle() != null) {
-            jobApplication.setRoleTitle(request.roleTitle());
-        }
-        if (request.jobId() != null) {
-            jobApplication.setJobId(request.jobId());
-        }
-        if (request.jobUrl() != null) {
-            jobApplication.setJobUrl(request.jobUrl());
-        }
-        if (request.status() != null) {
-            jobApplication.setStatus(request.status());
-        }
-        if (request.source() != null) {
-            jobApplication.setSource(request.source());
-        }
-        if (request.notes() != null) {
-            jobApplication.setNotes(request.notes());
-        }
-        if (request.salaryRange() != null) {
-            jobApplication.setSalaryRange(request.salaryRange());
-        }
-        if (request.location() != null) {
-            jobApplication.setLocation(request.location());
-        }
-        if (request.appliedDate() != null) {
-            jobApplication.setAppliedDate(request.appliedDate());
+        if (request.status() == null) {
+            throw new IllegalArgumentException("Status is required");
         }
 
-        if (request.contactIds() != null) {
-            Set<UUID> requestedContactIds = new HashSet<>(request.contactIds());
-            Set<Contact> existingContacts = jobApplication.getContacts();
-            Set<UUID> existingContactIds = existingContacts.stream()
-                    .map(Contact::getId)
+        jobApplication.setCompany(request.company());
+        jobApplication.setRoleTitle(request.roleTitle());
+        jobApplication.setJobId(request.jobId());
+        jobApplication.setJobUrl(request.jobUrl());
+        jobApplication.setStatus(request.status());
+        jobApplication.setSource(request.source());
+        jobApplication.setNotes(request.notes());
+        jobApplication.setSalaryRange(request.salaryRange());
+        jobApplication.setLocation(request.location());
+        jobApplication.setAppliedDate(request.appliedDate());
+
+        List<UUID> contactIds = request.contactIds() == null ? List.of() : request.contactIds();
+        Set<UUID> requestedContactIds = new HashSet<>(contactIds);
+        Set<Contact> existingContacts = jobApplication.getContacts();
+        Set<UUID> existingContactIds = existingContacts.stream()
+                .map(Contact::getId)
+                .collect(Collectors.toSet());
+
+        if (!existingContactIds.equals(requestedContactIds)) {
+            Set<Contact> contactsToRemove = existingContacts.stream()
+                    .filter(contact -> !requestedContactIds.contains(contact.getId()))
                     .collect(Collectors.toSet());
 
-            // Nothing changed
-            if (!existingContactIds.equals(requestedContactIds)) {
+            Set<UUID> contactIdsToAdd = requestedContactIds.stream()
+                    .filter(contactId -> !existingContactIds.contains(contactId))
+                    .collect(Collectors.toSet());
 
-                Set<Contact> contactsToRemove = existingContacts.stream()
-                        .filter(contact -> !requestedContactIds.contains(contact.getId()))
-                        .collect(Collectors.toSet());
+            for (Contact contact : contactsToRemove) {
+                jobApplication.removeContact(contact);
+            }
 
-                Set<UUID> contactIdsToAdd = requestedContactIds.stream()
-                        .filter(contactId -> !existingContactIds.contains(contactId))
-                        .collect(Collectors.toSet());
+            if (!contactIdsToAdd.isEmpty()) {
+                List<Contact> contactsToAdd = contactRepository
+                        .findByIdInAndUser(new ArrayList<>(contactIdsToAdd), currentUser);
 
-                for (Contact contact : contactsToRemove) {
-                    jobApplication.removeContact(contact);
+                if (contactsToAdd.size() != contactIdsToAdd.size()) {
+                    throw new ContactNotFoundException("One or more contacts not found");
                 }
 
-                if (!contactIdsToAdd.isEmpty()) {
-
-                    List<Contact> contactsToAdd = contactRepository
-                            .findByIdInAndUser(new ArrayList<>(contactIdsToAdd), currentUser);
-
-                    if (contactsToAdd.size() != contactIdsToAdd.size()) {
-                        throw new ContactNotFoundException("One or more contacts not found");
-                    }
-
-                    for (Contact contact : contactsToAdd) {
-                        jobApplication.addContact(contact);
-                    }
+                for (Contact contact : contactsToAdd) {
+                    jobApplication.addContact(contact);
                 }
-
             }
         }
 
