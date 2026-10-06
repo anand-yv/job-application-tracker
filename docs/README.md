@@ -14,6 +14,21 @@ disagree, the code wins — fix the doc.
 | [features-todo.md](features-todo.md) | Planned / partially built features, with layers touched and priority | You plan new work, start something, or reprioritise |
 | [dead-code.md](dead-code.md) | Unused code, files, and config that are safe to delete | You find or remove dead code |
 
+## Viewing the docs
+
+`docs/index.html` is a small viewer that renders these markdown files with
+navigation, search, and colour-coded badges. Browsers can't load local files
+from a double-clicked HTML page, so serve the folder from the project root:
+
+```bash
+npx serve docs
+# or
+python3 -m http.server 8000 --directory docs
+```
+
+Then open the URL it prints. The viewer only reads the `.md` files — to change
+content (including ticking checkboxes), edit the markdown and refresh.
+
 ## Conventions
 
 - Checkboxes (`- [ ]` / `- [x]`) in the features files so progress is easy to tick off.

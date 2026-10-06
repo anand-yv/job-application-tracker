@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Job Tracker · Docs</title>
+  <link rel="stylesheet" href="style.css">
+  <script>
+    (function () {
+      var t = localStorage.getItem("docs-theme");
+      if (!t) t = matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+      document.documentElement.dataset.theme = t;
+    })();
+  </script>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#/README">
+        <span class="brand-mark">JT</span>
+        <span>
+          <span class="brand-title">Job Tracker</span>
+          <span class="brand-sub">Project docs</span>
+        </span>
+      </a>
+
+      <div class="search">
+        <span class="search-icon" id="search-icon"></span>
+        <input id="search" type="search" placeholder="Search docs" autocomplete="off" spellcheck="false">
+        <kbd>/</kbd>
+        <div class="search-results" id="search-results" hidden></div>
+      </div>
+
+      <nav class="nav" id="nav"></nav>
+
+      <div class="sidebar-footer">
+        <button class="ghost-btn" id="theme-toggle" type="button"></button>
+      </div>
+    </aside>
+
+    <div class="main">
+      <header class="topbar">
+        <button class="ghost-btn menu-btn" id="menu-toggle" type="button" aria-label="Open menu"></button>
+        <div class="crumbs" id="crumbs"></div>
+      </header>
+      <div class="page">
+        <article class="content" id="content"></article>
+        <aside class="toc" id="toc"></aside>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/marked@15/marked.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
