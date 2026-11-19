@@ -11,6 +11,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.jobtracker.api.dto.JobApplicationRequest;
 import com.jobtracker.api.dto.JobApplicationResponse;
@@ -19,15 +20,15 @@ import com.jobtracker.api.exception.ApplicationNotFoundException;
 import com.jobtracker.api.exception.ContactNotFoundException;
 import com.jobtracker.api.mapper.ApplicationMapper;
 import com.jobtracker.api.model.ApplicationStatus;
+import com.jobtracker.api.model.ApplicationStatusHistory;
 import com.jobtracker.api.model.Contact;
 import com.jobtracker.api.model.JobApplication;
 import com.jobtracker.api.model.User;
 import com.jobtracker.api.repository.ApplicationRepository;
 import com.jobtracker.api.repository.ApplicationSpecifications;
+import com.jobtracker.api.repository.ApplicationStatusHistoryRepository;
 import com.jobtracker.api.repository.ContactRepository;
 import com.jobtracker.api.security.CurrentUserProvider;
-
-import jakarta.transaction.Transactional;
 
 @Service
 public class ApplicationServiceImpl implements ApplicationService {
@@ -35,16 +36,18 @@ public class ApplicationServiceImpl implements ApplicationService {
     private final ApplicationRepository applicationRepository;
     private final ApplicationMapper applicationMapper;
     private final ContactRepository contactRepository;
+    private final ApplicationStatusHistoryRepository statusHistoryRepository;
 
     public ApplicationServiceImpl(CurrentUserProvider currentUserProvider, ApplicationRepository applicationRepository,
-            ApplicationMapper applicationMapper, ContactRepository contactRepository) {
+            ApplicationMapper applicationMapper, ContactRepository contactRepository, ApplicationStatusHistoryRepository statusHistoryRepository) {
         this.currentUserProvider = currentUserProvider;
         this.applicationRepository = applicationRepository;
         this.applicationMapper = applicationMapper;
         this.contactRepository = contactRepository;
+        this.statusHistoryRepository = statusHistoryRepository;
     }
 
-    @Transactional
+    @Transactional 
     @Override
     public JobApplicationResponse createApplication(JobApplicationRequest request) {
         User currentUser = currentUserProvider.getCurrentUser();
@@ -78,6 +81,7 @@ public class ApplicationServiceImpl implements ApplicationService {
         }
 
         JobApplication savedJobApplication = applicationRepository.save(jobApplication);
+        recordStatusChange(savedJobApplication, null, savedJobApplication.getStatus());
         return applicationMapper.toResponse(savedJobApplication);
     }
 
@@ -116,6 +120,8 @@ public class ApplicationServiceImpl implements ApplicationService {
         if (request.status() == null) {
             throw new IllegalArgumentException("Status is required");
         }
+
+        ApplicationStatus oldStatus = jobApplication.getStatus();
 
         jobApplication.setCompany(request.company());
         jobApplication.setRoleTitle(request.roleTitle());
@@ -162,10 +168,12 @@ public class ApplicationServiceImpl implements ApplicationService {
             }
         }
 
+        recordStatusChange(jobApplication, oldStatus, request.status());
         JobApplication savedJobApplication = applicationRepository.save(jobApplication);
         return applicationMapper.toResponse(savedJobApplication);
     }
 
+    @Transactional
     @Override
     public JobApplicationResponse updateStatus(UUID id, ApplicationStatus applicationStatus) {
         User currentUser = currentUserProvider.getCurrentUser();
@@ -177,12 +185,17 @@ public class ApplicationServiceImpl implements ApplicationService {
             throw new IllegalArgumentException("Status cannot be null");
         }
 
+        ApplicationStatus oldStatus = jobApplication.getStatus();
+
         jobApplication.setStatus(applicationStatus);
+
+        recordStatusChange(jobApplication, oldStatus, applicationStatus);
         JobApplication savedJobApplication = applicationRepository.save(jobApplication);
 
         return applicationMapper.toResponse(savedJobApplication);
     }
 
+    @Transactional
     @Override
     public void deleteApplication(UUID id) {
         User currentUser = currentUserProvider.getCurrentUser();
@@ -195,6 +208,18 @@ public class ApplicationServiceImpl implements ApplicationService {
             jobApplication.removeContact(contact);
         }
 
+        statusHistoryRepository.deleteByApplication_Id(id);
         applicationRepository.delete(jobApplication);
+    }
+
+    private void recordStatusChange(JobApplication jobApplication, ApplicationStatus oldStatus, ApplicationStatus newStatus){
+        if (oldStatus == newStatus) {
+            return;
+        }
+        ApplicationStatusHistory applicationStatusHistory = new ApplicationStatusHistory();
+        applicationStatusHistory.setApplication(jobApplication);
+        applicationStatusHistory.setOldStatus(oldStatus);
+        applicationStatusHistory.setNewStatus(newStatus);
+        statusHistoryRepository.save(applicationStatusHistory);
     }
 }
